@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit"
 import heroesReducer from "./reducer/heroes"
+import itemsReducer from "./reducer/items"
 
 const store = configureStore({
   reducer: {
-    heroes: heroesReducer
+    heroes: heroesReducer,
+    items: itemsReducer
   }
 })
 
