@@ -18,7 +18,7 @@ export function Profile() {
       <div>{data.steamAccount.id}</div>
       <div>{data.steamAccount.profileUri}</div>
       <div>{data.steamAccount.name}</div>
-      <img src={data.steamAccount.avatar} alt="" />
+      <img src={data.steamAccount.avatar} alt="" width={50} />
       <RankTier rank={data.steamAccount.seasonRank} />
       <Matches playerId={playerId} />
     </>
