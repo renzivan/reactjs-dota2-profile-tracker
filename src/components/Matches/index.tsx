@@ -3,9 +3,12 @@ import { useGetMatches } from "../../services/player.service"
 import { getHeroes } from "../../store/reducer/heroes"
 import { useGetHeroes } from "../../services/heroes.service"
 import { useEffect } from "react"
+import { useGetItems } from "../../services/items.service"
+import { getItems } from "../../store/reducer/items"
 
-export default function Matches({playerId}) {
+export default function Matches({ playerId }) {
   const heroes = useSelector(state => state.heroes.value)
+  const items = useSelector(state => state.items.value)
   const dispatch = useDispatch()
 
   const {
@@ -14,13 +17,17 @@ export default function Matches({playerId}) {
     isError: isErrorMatches
   } = useGetMatches(playerId)
 
+  const { data: dataItems } = useGetItems()
   const { data: dataHeroes } = useGetHeroes()
 
   useEffect(() => {
     if (dataHeroes && heroes.length === 0) {
       dispatch(getHeroes(Object.values(dataHeroes)))
     }
-  }, [dataHeroes, dispatch, heroes])
+    if (dataItems && items.length === 0) {
+      dispatch(getItems(Object.values(dataItems)))
+    }
+  }, [dataHeroes, dispatch, heroes, dataItems, items])
 
   if (isLoadingMatches) return (<h1>Loading matches....</h1>)
   if (!dataMatches || isErrorMatches) return (<h1>No matches found or profile is private.</h1>)
@@ -32,13 +39,32 @@ export default function Matches({playerId}) {
       {
         dataMatches &&
         dataMatches.map(match => {
-          const heroId = match.players[0].heroId
-          const hero = heroes.find(it => it.id === heroId)
+          const playerStats = match.players[0]
+          const hero = heroes.find(it => it.id === playerStats.heroId)
+          const matchItems = Array.from({ length: 6 }, (_, i) =>
+            items.find(it => it.id === playerStats[`item${i}Id`])
+          )
 
-          return heroes && (
+          console.log('playerStats: ', playerStats)
+
+          return hero && (
             <div key={match.id}>
-              {hero?.displayName}
-              <img src={`https://cdn.stratz.com/images/dota2/heroes/${hero?.shortName}_horz.png`} alt="" />
+              <img
+                src={`https://cdn.stratz.com/images/dota2/heroes/${hero.shortName}_horz.png`}
+                alt=""
+                title={hero.displayName}
+                width={50}
+              />
+              <span>{playerStats.numKills}/{playerStats.numDeaths}/{playerStats.numAssists}</span>
+              {matchItems?.map((item, index) => (
+                <img
+                  key={index}
+                  src={`https://cdn.stratz.com/images/dota2/items/${item?.shortName}.png`}
+                  title={item?.displayName}
+                  width={50}
+                  alt=""
+                />
+              ))}
             </div>
           )
         })
