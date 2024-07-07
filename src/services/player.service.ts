@@ -11,3 +11,15 @@ export const useGetPlayer = (playerId: string) => {
     }
   })
 }
+
+export const useGetMatches = (playerId: string) => {
+  return useQuery({
+    queryKey: ['matches'],
+    queryFn: async () => {
+      const res = await http.get(`/Player/${playerId}/matches`)
+      // const res = await http.get(`/Player/${playerId}/matches?take=5&skip=4`)
+
+      return res.data
+    }
+  })
+}

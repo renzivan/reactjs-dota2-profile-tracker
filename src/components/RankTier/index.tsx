@@ -7,14 +7,14 @@ export default function RankTier(props: { rank: number }) {
   }
 
   const getTierImage = () => {
-    if (!props.rank || props.rank >= 80) return null
+    if (!props.rank) return null
 
     return `/ranks/rank_star_${props.rank.toString()[1]}.png`
   }
 
   return (
     <div>
-      {props.rank  && <img src={getTierImage()} alt="Tier" />}
+      {props.rank || props.rank >= 80 && <img src={getTierImage()} alt="Tier" />}
       <img src={getRankImage()} alt="Rank" />
     </div>
   )
