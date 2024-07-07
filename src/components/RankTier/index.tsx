@@ -14,8 +14,8 @@ export default function RankTier(props: { rank: number }) {
 
   return (
     <div>
-      {props.rank || props.rank >= 80 && <img src={getTierImage()} alt="Tier" />}
-      <img src={getRankImage()} alt="Rank" />
+      {props?.rank < 80 && <img src={getTierImage()} alt="Tier" />}
+      <img src={getRankImage()} alt="Rank" width={50} />
     </div>
   )
 }
