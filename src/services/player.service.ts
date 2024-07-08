@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { http } from "./config.service"
 
 export const useGetPlayer = (playerId: string) => {
@@ -13,13 +13,18 @@ export const useGetPlayer = (playerId: string) => {
 }
 
 export const useGetMatches = (playerId: string) => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ['matches'],
-    queryFn: async () => {
-      const res = await http.get(`/Player/${playerId}/matches`)
-      // const res = await http.get(`/Player/${playerId}/matches?take=5&skip=4`)
-
+    queryFn: async ({ pageParam = 0 }) => {
+      const res = await http.get(`/Player/${playerId}/matches?take=5&skip=${pageParam}`)
       return res.data
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length === 5) {
+        return allPages.length * 5
+      }
+
+      return undefined
     }
   })
 }
