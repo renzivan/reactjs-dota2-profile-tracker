@@ -1,5 +1,5 @@
-import Matches from '../../components/Matches'
-import RankTier from '../../components/RankTier'
+import Matches from '@/components/Matches'
+import RankTier from '@/components/RankTier'
 import { useGetPlayer } from '../../services/player.service'
 import { useParams } from 'react-router-dom'
 
