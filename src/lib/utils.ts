@@ -7,14 +7,14 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getRole(lane: number, role: number) {
   if (lane === 2) {
-    return 'mid'
+    return { displayName: 'Mid Lane', shortName: 'mid' }
   }
 
   if (lane === 1) {
-    return role === 0 ? 'carry' : 'hard support'
+    return role === 0 ? { displayName: 'Safe Lane', shortName: 'safe_lane' } : { displayName: 'Hard Support', shortName: 'hard_support' }
   }
 
-  return role === 1 ? 'soft support' : 'offlane'
+  return role === 1 ? { displayName: 'Soft Support', shortName: 'soft_support' } : { displayName: 'Off Lane', shortName: 'offlane' }
 }
 
 export function secToMS(seconds: number) {

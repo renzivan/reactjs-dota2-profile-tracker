@@ -65,6 +65,8 @@ export default function Matches({ playerId }) {
               items.find(it => it.id === playerStats[`item${i}Id`])
             )
 
+            const { displayName: roleName, shortName: roleShortName } = getRole(playerStats.lane, playerStats.role)
+
             return hero && (
               <div key={match.id} className="flex justify-center">
                 <img
@@ -79,7 +81,7 @@ export default function Matches({ playerId }) {
                 <div>{lobby}</div>
                 <div>{gameMode}</div>
                 <div>{playerStats.isRadiant ? 'Radiant' : 'Dire'}</div>
-                <strong>{getRole(playerStats.lane, playerStats.role)}</strong>
+                <img src={`/roles/${roleShortName}.svg`} alt="" title={roleName} width={20} />
                 <div>Duration: {secToMS(match.durationSeconds)}</div>
                 <div>Date: {new Date(match.endDateTime * 1000).toLocaleString()}</div>
                 {matchItems?.map((item, index) => (
