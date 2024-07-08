@@ -3,15 +3,18 @@ import { useDispatch, useSelector } from "react-redux"
 import { Button } from "../ui/button"
 
 import { useGetMatches } from "../../services/player.service"
+import { useGetGameModes } from "../../services/gameModes.service"
 import { useGetHeroes } from "../../services/heroes.service"
 import { useGetItems } from "../../services/items.service"
 import { useGetLobbies } from "../../services/lobbies.service"
 
+import { setGameModes } from "../../store/reducer/gameModes"
 import { setHeroes } from "../../store/reducer/heroes"
 import { setItems } from "../../store/reducer/items"
 import { setLobbies } from "../../store/reducer/lobbies"
 
 export default function Matches({ playerId }) {
+  const gameModes = useSelector(state => state.gameModes.value)
   const heroes = useSelector(state => state.heroes.value)
   const items = useSelector(state => state.items.value)
   const lobbies = useSelector(state => state.lobbies.value)
@@ -20,6 +23,7 @@ export default function Matches({ playerId }) {
   const { data: dataItems } = useGetItems()
   const { data: dataHeroes } = useGetHeroes()
   const { data: dataLobbies } = useGetLobbies()
+  const { data: dataGameModes } = useGetGameModes()
 
   const {
     data: dataMatches,
@@ -31,8 +35,8 @@ export default function Matches({ playerId }) {
   } = useGetMatches(playerId)
 
   useEffect(() => {
-    if (dataLobbies && lobbies.length === 0) {
-      dispatch(setLobbies(Object.values(dataLobbies)))
+    if (dataGameModes && gameModes.length === 0) {
+      dispatch(setGameModes(Object.values(dataGameModes)))
     }
     if (dataHeroes && heroes.length === 0) {
       dispatch(setHeroes(Object.values(dataHeroes)))
@@ -40,7 +44,10 @@ export default function Matches({ playerId }) {
     if (dataItems && items.length === 0) {
       dispatch(setItems(Object.values(dataItems)))
     }
-  }, [dataHeroes, dispatch, heroes, dataItems, items, dataLobbies, lobbies])
+    if (dataLobbies && lobbies.length === 0) {
+      dispatch(setLobbies(Object.values(dataLobbies)))
+    }
+  }, [dataHeroes, dispatch, heroes, dataItems, items, dataLobbies, lobbies, dataGameModes, gameModes])
 
   console.log('matches: ', dataMatches)
 
@@ -49,7 +56,8 @@ export default function Matches({ playerId }) {
       {
         dataMatches?.pages.map(page => {
           return page.map(match => {
-            const lobby = lobbies.find(it => it.id === match.lobbyType)
+            const { name: lobby } = lobbies.find(it => it.id === match.lobbyType)
+            const { name: gameMode } = gameModes.find(it => it.id === match.gameMode)
             const playerStats = match.players[0]
             const hero = heroes.find(it => it.id === playerStats.heroId)
             const matchItems = Array.from({ length: 6 }, (_, i) =>
@@ -67,7 +75,8 @@ export default function Matches({ playerId }) {
                 <div>{playerStats.numKills}/{playerStats.numDeaths}/{playerStats.numAssists}</div>
                 <div className={`bg-${playerStats.isVictory ? "green" : "red"}-300`}>{playerStats.isVictory ? "WIN" : "LOSE"}</div>
                 <div>{playerStats.level}</div>
-                <div>{lobby.name}</div>
+                <div>{lobby}</div>
+                <div>{gameMode}</div>
                 {matchItems?.map((item, index) => (
                   <img
                     key={index}
