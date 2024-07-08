@@ -5,17 +5,21 @@ import { Button } from "../ui/button"
 import { useGetMatches } from "../../services/player.service"
 import { useGetHeroes } from "../../services/heroes.service"
 import { useGetItems } from "../../services/items.service"
+import { useGetLobbies } from "../../services/lobbies.service"
 
-import { getHeroes } from "../../store/reducer/heroes"
-import { getItems } from "../../store/reducer/items"
+import { setHeroes } from "../../store/reducer/heroes"
+import { setItems } from "../../store/reducer/items"
+import { setLobbies } from "../../store/reducer/lobbies"
 
 export default function Matches({ playerId }) {
   const heroes = useSelector(state => state.heroes.value)
   const items = useSelector(state => state.items.value)
+  const lobbies = useSelector(state => state.lobbies.value)
 
   const dispatch = useDispatch()
   const { data: dataItems } = useGetItems()
   const { data: dataHeroes } = useGetHeroes()
+  const { data: dataLobbies } = useGetLobbies()
 
   const {
     data: dataMatches,
@@ -27,13 +31,16 @@ export default function Matches({ playerId }) {
   } = useGetMatches(playerId)
 
   useEffect(() => {
+    if (dataLobbies && lobbies.length === 0) {
+      dispatch(setLobbies(Object.values(dataLobbies)))
+    }
     if (dataHeroes && heroes.length === 0) {
-      dispatch(getHeroes(Object.values(dataHeroes)))
+      dispatch(setHeroes(Object.values(dataHeroes)))
     }
     if (dataItems && items.length === 0) {
-      dispatch(getItems(Object.values(dataItems)))
+      dispatch(setItems(Object.values(dataItems)))
     }
-  }, [dataHeroes, dispatch, heroes, dataItems, items])
+  }, [dataHeroes, dispatch, heroes, dataItems, items, dataLobbies, lobbies])
 
   console.log('matches: ', dataMatches)
 
@@ -42,6 +49,7 @@ export default function Matches({ playerId }) {
       {
         dataMatches?.pages.map(page => {
           return page.map(match => {
+            const lobby = lobbies.find(it => it.id === match.lobbyType)
             const playerStats = match.players[0]
             const hero = heroes.find(it => it.id === playerStats.heroId)
             const matchItems = Array.from({ length: 6 }, (_, i) =>
@@ -59,6 +67,7 @@ export default function Matches({ playerId }) {
                 <div>{playerStats.numKills}/{playerStats.numDeaths}/{playerStats.numAssists}</div>
                 <div className={`bg-${playerStats.isVictory ? "green" : "red"}-300`}>{playerStats.isVictory ? "WIN" : "LOSE"}</div>
                 <div>{playerStats.level}</div>
+                <div>{lobby.name}</div>
                 {matchItems?.map((item, index) => (
                   <img
                     key={index}
