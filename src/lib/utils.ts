@@ -16,3 +16,14 @@ export function getRole(lane: number, role: number) {
 
   return role === 1 ? 'soft support' : 'offlane'
 }
+
+export function secToMS(seconds: number) {
+  const mins = Math.floor(seconds / 60)
+  const secs = Math.floor(seconds % 60)
+
+  // Pad single digit seconds with a leading zero
+  const formattedMins = String(mins)
+  const formattedSecs = String(secs).padStart(2, '0')
+
+  return `${formattedMins}:${formattedSecs}`
+}
