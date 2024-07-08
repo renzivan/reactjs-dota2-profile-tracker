@@ -12,6 +12,7 @@ import { setGameModes } from "../../store/reducer/gameModes"
 import { setHeroes } from "../../store/reducer/heroes"
 import { setItems } from "../../store/reducer/items"
 import { setLobbies } from "../../store/reducer/lobbies"
+import { getRole } from "../../lib/utils"
 
 export default function Matches({ playerId }) {
   const gameModes = useSelector(state => state.gameModes.value)
@@ -63,7 +64,7 @@ export default function Matches({ playerId }) {
             const matchItems = Array.from({ length: 6 }, (_, i) =>
               items.find(it => it.id === playerStats[`item${i}Id`])
             )
-  
+
             return hero && (
               <div key={match.id} className="flex justify-center">
                 <img
@@ -77,6 +78,8 @@ export default function Matches({ playerId }) {
                 <div>{playerStats.level}</div>
                 <div>{lobby}</div>
                 <div>{gameMode}</div>
+                <div>{playerStats.isRadiant ? 'Radiant' : 'Dire'}</div>
+                <strong>{getRole(playerStats.lane, playerStats.role)}</strong>
                 {matchItems?.map((item, index) => (
                   <img
                     key={index}
