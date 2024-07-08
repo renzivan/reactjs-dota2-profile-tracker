@@ -3,7 +3,7 @@ import { http } from "./config.service"
 
 export const useGetHeroes = () => {
   return useQuery({
-    queryKey: ['hero'],
+    queryKey: ['heroes'],
     queryFn: async () => {
       const res = await http.get('/Hero')
 

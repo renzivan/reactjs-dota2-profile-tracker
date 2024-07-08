@@ -6,12 +6,12 @@ export const heroesSlice = createSlice({
     value: []
   },
   reducers: {
-    getHeroes: (state, action) => {
+    setHeroes: (state, action) => {
       state.value = action.payload
     }
   }
 })
 
-export const { getHeroes } = heroesSlice.actions
+export const { setHeroes } = heroesSlice.actions
 
 export default heroesSlice.reducer
