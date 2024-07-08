@@ -12,7 +12,7 @@ import { setGameModes } from "../../store/reducer/gameModes"
 import { setHeroes } from "../../store/reducer/heroes"
 import { setItems } from "../../store/reducer/items"
 import { setLobbies } from "../../store/reducer/lobbies"
-import { getRole } from "../../lib/utils"
+import { getRole, secToMS } from "../../lib/utils"
 
 export default function Matches({ playerId }) {
   const gameModes = useSelector(state => state.gameModes.value)
@@ -80,6 +80,8 @@ export default function Matches({ playerId }) {
                 <div>{gameMode}</div>
                 <div>{playerStats.isRadiant ? 'Radiant' : 'Dire'}</div>
                 <strong>{getRole(playerStats.lane, playerStats.role)}</strong>
+                <div>Duration: {secToMS(match.durationSeconds)}</div>
+                <div>Date: {new Date(match.endDateTime * 1000).toLocaleString()}</div>
                 {matchItems?.map((item, index) => (
                   <img
                     key={index}
