@@ -40,7 +40,7 @@ export default function Header() {
   console.log('darkMode: ', darkMode)
 
   return (
-    <div className="gradient-bg py-5 border-b">
+    <div className="gradient-bg pt-3 pb-5 border-b">
       <div className="container">
         <div className="flex justify-end items-center gap-2 mb-3">
           <Label htmlFor="switch-mode">Light</Label>
