@@ -3,7 +3,7 @@ import { http } from "./config.service"
 
 export const useGetPlayer = (playerId: string) => {
   return useQuery({
-    queryKey: ['player'],
+    queryKey: ['player', playerId],
     queryFn: async () => {
       const res = await http.get(`/Player/${playerId}`)
 
@@ -14,7 +14,7 @@ export const useGetPlayer = (playerId: string) => {
 
 export const useGetMatches = (playerId: string) => {
   return useInfiniteQuery({
-    queryKey: ['matches'],
+    queryKey: ['matches', playerId],
     queryFn: async ({ pageParam = 0 }) => {
       const res = await http.get(`/Player/${playerId}/matches?take=5&skip=${pageParam}`)
       return res.data
