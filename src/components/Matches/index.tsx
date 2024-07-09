@@ -32,6 +32,8 @@ export default function Matches({ playerId }) {
     isError: isErrorMatches,
     fetchNextPage,
     isFetchingNextPage,
+    refetch,
+    isRefetching,
     hasNextPage
   } = useGetMatches(playerId)
 
@@ -48,17 +50,21 @@ export default function Matches({ playerId }) {
     if (dataLobbies && lobbies.length === 0) {
       dispatch(setLobbies(Object.values(dataLobbies)))
     }
-  }, [dataHeroes, dispatch, heroes, dataItems, items, dataLobbies, lobbies, dataGameModes, gameModes])
+  }, [playerId, dataHeroes, dispatch, heroes, dataItems, items, dataLobbies, lobbies, dataGameModes, gameModes])
+
+  useEffect(() => {
+    refetch()
+  }, [playerId, refetch])
 
   console.log('matches: ', dataMatches)
 
   return (
-    <div>
+    <div className="flex flex-col items-center">
       {
         dataMatches?.pages.map(page => {
           return page.map(match => {
-            const { name: lobby } = lobbies.find(it => it.id === match.lobbyType)
-            const { name: gameMode } = gameModes.find(it => it.id === match.gameMode)
+            const lobby = lobbies?.find(it => it.id === match.lobbyType)
+            const gameMode = gameModes?.find(it => it.id === match.gameMode)
             const playerStats = match.players[0]
             const hero = heroes.find(it => it.id === playerStats.heroId)
             const matchItems = Array.from({ length: 6 }, (_, i) =>
@@ -78,8 +84,8 @@ export default function Matches({ playerId }) {
                 <div>{playerStats.numKills}/{playerStats.numDeaths}/{playerStats.numAssists}</div>
                 <div className={`bg-${playerStats.isVictory ? "green" : "red"}-300`}>{playerStats.isVictory ? "WIN" : "LOSE"}</div>
                 <div>{playerStats.level}</div>
-                <div>{lobby}</div>
-                <div>{gameMode}</div>
+                <div>{lobby?.name}</div>
+                <div>{gameMode.name}</div>
                 <div>{playerStats.isRadiant ? 'Radiant' : 'Dire'}</div>
                 <img src={`/roles/${roleShortName}.svg`} alt="" title={roleName} width={20} />
                 <div>Duration: {secToMS(match.durationSeconds)}</div>
@@ -102,6 +108,7 @@ export default function Matches({ playerId }) {
       {isFetchingNextPage && <h1>Refetching matches....</h1>}
       {((!dataMatches || isErrorMatches) && !isLoadingMatches) && <h1>No matches found or profile is private.</h1>}
       {isLoadingMatches && <h1>Loading matches....</h1>}
+      {isRefetching && <h1>Loading matches....</h1>}
     </div>
   )
 }

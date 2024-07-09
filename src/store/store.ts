@@ -4,6 +4,7 @@ import gameModesReducer from "./reducer/gameModes"
 import heroesReducer from "./reducer/heroes"
 import itemsReducer from "./reducer/items"
 import lobbiesReducer from "./reducer/lobbies"
+import playerIdReducer from "./reducer/playerId"
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
     gameModes: gameModesReducer,
     heroes: heroesReducer,
     items: itemsReducer,
-    lobbies: lobbiesReducer
+    lobbies: lobbiesReducer,
+    playerId: playerIdReducer,
   }
 })
 
