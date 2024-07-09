@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 190 90% 95%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -33,11 +33,16 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    /* custom */
+    --gradient-from: 205 46% 10% / .3;
+    --gradient-mid: 191 28% 23% / .3;
+    --gradient-to: 207 41% 27% / .3;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --foreground: 222 95% 93%;
 
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
@@ -63,6 +68,11 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
+    /* custom */
+    --gradient-from: 205 46% 10%;
+    --gradient-mid: 191 28% 23%;
+    --gradient-to: 207 41% 27%;
   }
 }
 
@@ -72,5 +82,16 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background-image: linear-gradient(
+      to right,
+      hsl(var(--gradient-from)),
+      hsl(var(--gradient-mid)),
+      hsl(var(--gradient-to))
+    );
   }
 }
