@@ -27,3 +27,13 @@ export function secToMS(seconds: number) {
 
   return `${formattedMins}:${formattedSecs}`
 }
+
+export function formatTimestamp(timestamp: number) {
+  const date = new Date(timestamp * 1000)
+
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
