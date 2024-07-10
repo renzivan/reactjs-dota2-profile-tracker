@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Button } from "../ui/button"
-import { formatTimestamp, getRole, secToMS } from "../../lib/utils"
+import { formatTimestamp, getRankName, getRole, secToMS } from "../../lib/utils"
 
 import { useGetAbilities } from "../../services/abilities.service"
 import { useGetMatches } from "../../services/player.service"
@@ -52,29 +52,6 @@ export default function Matches({ playerId }) {
     hasNextPage
   } = useGetMatches(playerId)
 
-  const getBracket = (bracket) => {
-    switch (bracket) {
-      case 1:
-        return 'Herald-tier Match'
-      case 2:
-        return 'Guardian-tier Match'
-      case 3:
-        return 'Crusader-tier Match'
-      case 4:
-        return 'Archon-tier Match'
-      case 5:
-        return 'Legend-tier Match'
-      case 6:
-        return 'Ancient-tier Match'
-      case 7:
-        return 'Divine-tier Match'
-      case 8:
-        return 'Immortal-tier Match'
-      default:
-        return 'Rankless-tier Match'
-    }
-  }
-
   useEffect(() => {
     if (dataAbilities && abilities.length === 0) {
       dispatch(setAbilities(Object.values(dataAbilities)))
@@ -92,8 +69,6 @@ export default function Matches({ playerId }) {
       dispatch(setLobbies(Object.values(dataLobbies)))
     }
   }, [playerId, dataHeroes, dispatch, heroes, dataItems, items, dataLobbies, lobbies, dataGameModes, gameModes, dataAbilities, abilities])
-
-  console.log('dataMatches: ', dataMatches)
 
   return (
     <div className="flex flex-col items-center">
@@ -140,7 +115,7 @@ export default function Matches({ playerId }) {
                           <div className="flex items-center justify-end gap-3 min-w-52">
                             <Tooltip 
                               trigger={<RankTier rank={match.rank} width={11} />}
-                              content={<p>{getBracket(match.bracket)}</p>}
+                              content={<p>{getRankName(match.bracket)}-tier Match</p>}
                             />
                             <div className="flex flex-wrap max-w-32 items-center justify-center gap-1">
                               {matchItems?.map((item, index) => (
