@@ -23,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import LevelCircle from "../LevelCircle"
 
 export default function Matches({ playerId }) {
   const gameModes = useSelector(state => state.gameModes.value)
@@ -133,14 +134,12 @@ export default function Matches({ playerId }) {
                   </div>
 
                   <div className="flex items-center justify-between w-full px-5">
-                    <div className="flex items-center gap-3 min-w-48">
-                      <div className="border border-4 rounded-full w-8 h-8 text-sm flex items-center justify-center">
-                        <Label className="text-md">{playerStats.level}</Label>
-                      </div>
+                    <div className="flex items-center gap-5 min-w-48">
+                      <LevelCircle level={playerStats.level} />
                       <div className={`text-black w-7 h-7 flex items-center justify-center font-extrabold rounded ${playerStats.isVictory ? "!bg-emerald-500" : "!bg-red-500"}`}>
                         {playerStats.isVictory ? "W" : "L"}
                       </div>
-                      <Label className="text-md">{playerStats.numKills} / {playerStats.numDeaths} / {playerStats.numAssists}</Label>
+                      <Label className="text-md min-w-20">{playerStats.numKills} / {playerStats.numDeaths} / {playerStats.numAssists}</Label>
                       <Label className="text-md">{lobby?.name}</Label>
                     </div>
                     <div className="flex items-center justify-end gap-3 min-w-52">
@@ -157,12 +156,11 @@ export default function Matches({ playerId }) {
                       <div className="flex flex-wrap max-w-32 items-center justify-center gap-1">
                         {matchItems?.map((item, index) => (
                           item ? (
-                              <TooltipProvider>
+                              <TooltipProvider key={index}>
                               <Tooltip>
                                 <TooltipTrigger>
                                   <img
                                     src={`https://cdn.stratz.com/images/dota2/items/${item?.shortName}.png`}
-                                    key={index}
                                     className="rounded w-10 h-7"
                                     alt=""
                                   />
