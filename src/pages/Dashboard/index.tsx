@@ -1,6 +1,6 @@
 export function Dashboard() {
   return (
-    <div>
+    <div className="mt-16">
       <div className="flex justify-center">
         <div>Example Player ID: 131933530</div>
       </div>
