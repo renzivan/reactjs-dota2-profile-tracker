@@ -23,7 +23,6 @@ export function Profile() {
   if (isLoading) return (<h1>Loading profile....</h1>)
   if (isError) return (<h1>Cant load profile....</h1>)
   if (!data) return (<h1>No player found....</h1>)
-  console.log('player: ', data)
 
   return (
     <>
@@ -35,11 +34,11 @@ export function Profile() {
                 Overview
               </Link>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            {/* <NavigationMenuItem>
               <Link to={`/profile/${playerId}/matches`} className={getLinkClassName(`/profile/${playerId}/matches`)}>
                 Matches
               </Link>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
           </NavigationMenuList>
         </NavigationMenu>
       </div>

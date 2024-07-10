@@ -12,6 +12,7 @@ export const useGetPlayer = (playerId: string) => {
   })
 }
 
+// change take, lastPage.length ===, allPages.length *
 export const useGetMatches = (playerId: string) => {
   return useInfiniteQuery({
     queryKey: ['matches', playerId],

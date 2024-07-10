@@ -37,7 +37,6 @@ export default function Header() {
       document.documentElement.classList.remove('dark')
     }
   }, [darkMode])
-  console.log('darkMode: ', darkMode)
 
   return (
     <div className="gradient-bg pt-3 pb-5 border-b">
