@@ -131,13 +131,13 @@ export default function Matches({ playerId }) {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between min-w-64">
+                        <div className="flex items-center justify-between min-w-72">
                           <Separator orientation="vertical" className="h-12" />
                           <Tooltip 
                             trigger={<img src={`https://cdn.stratz.com/images/dota2/${side}_square.png`} className="h-8 rounded" alt="" />}
                             content={<p className="capitalize">{side}</p>}
                           />
-                          <div className="bg-accent text-sm rounded px-5 py-2">{gameMode?.name}</div>
+                          <div className="bg-accent text-sm rounded py-2 min-w-32">{gameMode?.name}</div>
                           <div className="flex flex-col items-end">
                             <div className="text-sm">{secToMS(match.durationSeconds)}</div>
                             <div className="text-sm">{formatTimestamp(match.endDateTime)}</div>
@@ -147,7 +147,7 @@ export default function Matches({ playerId }) {
                     </AccordionTrigger>
                     <AccordionContent>
                       <div className="flex gap-2">
-                        {abilities && playerStats.abilities.map((ability, index) => {
+                        {(hero && abilities) && playerStats?.abilities?.map((ability, index) => {
                           const abilityFound = abilities?.find(it => it.id === ability.abilityId )
 
                           if (!abilityFound) return null
@@ -155,7 +155,7 @@ export default function Matches({ playerId }) {
                           return abilityFound.isTalent ?
                             <Tooltip
                               key={index}
-                              trigger={<Talent key={index} abilityId={abilityFound.id} heroTalents={hero.talents} />}
+                              trigger={<Talent key={index} abilityId={abilityFound.id} heroTalents={hero?.talents} />}
                               content={<p>{abilityFound.language.displayName}</p>}
                             />
                             :

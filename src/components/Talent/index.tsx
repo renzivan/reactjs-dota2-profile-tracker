@@ -8,7 +8,5 @@ type TalentProps = {
 export default function Talent({ abilityId, heroTalents }: TalentProps) {
   const talent = heroTalents.find(talent => talent.abilityId === abilityId)
 
-  return (
-    <TalentTree slot={talent.slot} className="w-8" />
-  )
+  return talent && <TalentTree slot={talent.slot} className="w-8" />
 }
