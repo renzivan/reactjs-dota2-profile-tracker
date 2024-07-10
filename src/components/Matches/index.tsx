@@ -17,12 +17,7 @@ import { setLobbies } from "../../store/reducer/lobbies"
 import RankTier from "../RankTier"
 import { Separator } from "../ui/separator"
 import { Label } from "../ui/label"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Tooltip } from "@/components/ui/tooltip"
 import LevelCircle from "../LevelCircle"
 
 export default function Matches({ playerId }) {
@@ -106,30 +101,14 @@ export default function Matches({ playerId }) {
               return (
                 <div key={match.id} className="flex items-center justify-between w-full border-b py-2">
                   <div className="flex items-center justify-between min-w-40">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <img
-                            src={`https://cdn.stratz.com/images/dota2/heroes/${hero?.shortName}_horz.png`}
-                            alt=""
-                            className="w-24 rounded"
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{hero?.displayName}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <img src={`/roles/${roleShortName}.svg`} alt="" className="w-7"/>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{roleName}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Tooltip 
+                      trigger={<img src={`https://cdn.stratz.com/images/dota2/heroes/${hero?.shortName}_horz.png`} alt="" className="w-24 rounded" />}
+                      content={<p>{hero?.displayName}</p>}
+                    />
+                    <Tooltip 
+                      trigger={<img src={`/roles/${roleShortName}.svg`} alt="" className="w-7"/>}
+                      content={<p>{roleName}</p>}
+                    />
                     <Separator orientation="vertical" className="h-12" />
                   </div>
 
@@ -143,33 +122,18 @@ export default function Matches({ playerId }) {
                       <Label className="text-md">{lobby?.name}</Label>
                     </div>
                     <div className="flex items-center justify-end gap-3 min-w-52">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <RankTier rank={match.rank} width={11} />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{getBracket(match.bracket)}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Tooltip 
+                        trigger={<RankTier rank={match.rank} width={11} />}
+                        content={<p>{getBracket(match.bracket)}</p>}
+                      />
                       <div className="flex flex-wrap max-w-32 items-center justify-center gap-1">
                         {matchItems?.map((item, index) => (
-                          item ? (
-                              <TooltipProvider key={index}>
-                              <Tooltip>
-                                <TooltipTrigger>
-                                  <img
-                                    src={`https://cdn.stratz.com/images/dota2/items/${item?.shortName}.png`}
-                                    className="rounded w-10 h-7"
-                                    alt=""
-                                  />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>{item?.displayName}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                          item ? (      
+                            <Tooltip
+                              key={index}
+                              trigger={<img src={`https://cdn.stratz.com/images/dota2/items/${item?.shortName}.png`} className="rounded w-10 h-7" alt="" />}
+                              content={<p>{item?.displayName}</p>}
+                            />
                           ) : (<div key={index} className="bg-accent rounded w-10 h-7"/>)
                         ))}
                       </div>
@@ -178,16 +142,10 @@ export default function Matches({ playerId }) {
 
                   <div className="flex items-center justify-between min-w-64">
                     <Separator orientation="vertical" className="h-12" />
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                        <img src={`https://cdn.stratz.com/images/dota2/${side}_square.png`} className="h-8 rounded" alt="" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="capitalize">{side}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Tooltip 
+                      trigger={<img src={`https://cdn.stratz.com/images/dota2/${side}_square.png`} className="h-8 rounded" alt="" />}
+                      content={<p className="capitalize">{side}</p>}
+                    />
                     <Label className="bg-accent rounded px-5 py-2">{gameMode?.name}</Label>
                     <div className="flex flex-col items-end">
                       <Label>{secToMS(match.durationSeconds)}</Label>
