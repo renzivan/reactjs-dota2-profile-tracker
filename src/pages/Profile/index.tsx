@@ -9,6 +9,8 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu"
 import { navigationMenuTriggerStyle } from "../../components/ui/navigation-menu"
+import { Tooltip } from '../../components/ui/tooltip'
+import { getRankName } from '../../lib/utils'
 
 export function Profile() {
   const location = useLocation()
@@ -52,7 +54,10 @@ export function Profile() {
               <span className="font-bold">{data.steamAccount.name}</span>
             </a>
           </div>
-          <RankTier rank={data.steamAccount.seasonRank} leaderBoard={data.steamAccount.seasonLeaderboardRank} />
+          <Tooltip
+            trigger={<RankTier rank={data.steamAccount.seasonRank} leaderBoard={data.steamAccount.seasonLeaderboardRank} />}
+            content={<p>{getRankName(Math.floor(data.steamAccount.seasonRank/10))} {data.steamAccount.seasonRank < 80 && data.steamAccount.seasonRank % 10}</p>}
+          />
         </div>
       </div>
       <div className="mt-5">
