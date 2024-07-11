@@ -1,0 +1,24 @@
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--spinner-bg);
+  box-shadow: 32px 0 var(--spinner-bg), -32px 0 var(--spinner-bg);
+  position: relative;
+  animation: flash 0.5s ease-out infinite alternate;
+}
+
+@keyframes flash {
+  0% {
+    background-color: var(--spinner-flash-bg-start);
+    box-shadow: 32px 0 var(--spinner-flash-bg-start), -32px 0 var(--spinner-bg);
+  }
+  50% {
+    background-color: var(--spinner-bg);
+    box-shadow: 32px 0 var(--spinner-flash-bg-start), -32px 0 var(--spinner-flash-bg-start);
+  }
+  100% {
+    background-color: var(--spinner-flash-bg-start);
+    box-shadow: 32px 0 var(--spinner-bg), -32px 0 var(--spinner-flash-bg-start);
+  }
+}

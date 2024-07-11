@@ -39,6 +39,8 @@
     --gradient-from: 205 46% 10% / .3;
     --gradient-mid: 191 28% 23% / .3;
     --gradient-to: 207 41% 27% / .3;
+    --spinner-bg: #0f172a;
+    --spinner-flash-bg-start: #0002;
   }
 
   .dark {
@@ -74,6 +76,8 @@
     --gradient-from: 205 46% 10%;
     --gradient-mid: 191 28% 23%;
     --gradient-to: 207 41% 27%;
+    --spinner-bg: #fff;
+    --spinner-flash-bg-start: #FFF2;
   }
 }
 
