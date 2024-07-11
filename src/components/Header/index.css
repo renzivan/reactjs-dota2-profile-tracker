@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'Thicccboi';
+  src: url('../../fonts/THICCCBOI-ExtraBold.woff2') format('woff2');
+}
+
+.logo-text {
+  font-family: 'Thicccboi', sans-serif;
+}
