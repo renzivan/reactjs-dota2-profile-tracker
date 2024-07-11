@@ -27,6 +27,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import Talent from "../Talent"
+import Spinner from "../Spinner"
 
 export default function Matches({ playerId }) {
   const elementRef = useRef(null)
@@ -197,7 +198,7 @@ export default function Matches({ playerId }) {
       </div>
       <div ref={elementRef} className="flex flex-col items-center justify-center gap-5">
         {((!dataMatches || isErrorMatches) && !isLoadingMatches) && <span>No matches found or profile is private.</span>}
-        {(isLoadingMatches || isRefetching || isFetchingNextPage) && <h1>Loading matches....</h1>}
+        {(isLoadingMatches || isRefetching || isFetchingNextPage) && <Spinner />}
         {(dataMatches && !isErrorMatches && hasNextPage) && <Button onClick={() => fetchNextPage()}>Load more</Button>}
       </div>
     </div>
