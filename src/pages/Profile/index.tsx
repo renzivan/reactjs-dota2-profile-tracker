@@ -1,8 +1,8 @@
+import { Link, useLocation, useParams } from 'react-router-dom'
 import Matches from '@/components/Matches'
 import RankTier from '@/components/RankTier'
+import Spinner from '../../components/Spinner'
 import { useGetPlayer } from '../../services/player.service'
-import { useLocation, useParams } from 'react-router-dom'
-import { Link } from "react-router-dom"
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -22,9 +22,15 @@ export function Profile() {
     return `${navigationMenuTriggerStyle()} ${isActive ? '!bg-accent' : ''}`
   }
 
-  if (isLoading) return (<h1>Loading profile....</h1>)
-  if (isError) return (<h1>Cant load profile....</h1>)
-  if (!data) return (<h1>No player found....</h1>)
+  if (isLoading || isError || !data) {
+    return (
+      <div className="flex justify-center mt-16">
+        {isLoading && <Spinner />}
+        {isError && <span>Something went wrong. Please reload page.</span>}
+        {(!data && !isLoading && !isError) && <span>No profile found or profile is private.</span>}
+      </div>
+    )
+  }
 
   return (
     <>
@@ -56,7 +62,12 @@ export function Profile() {
           </div>
           <Tooltip
             trigger={<RankTier rank={data.steamAccount.seasonRank} leaderBoard={data.steamAccount.seasonLeaderboardRank} />}
-            content={<p>{getRankName(Math.floor(data.steamAccount.seasonRank/10))} {data.steamAccount.seasonRank < 80 && data.steamAccount.seasonRank % 10}</p>}
+            content={
+              <p>
+                {getRankName(Math.floor(data.steamAccount.seasonRank / 10))} 
+                {data.steamAccount.seasonRank < 80 && data.steamAccount.seasonRank % 10}
+              </p>
+            }
           />
         </div>
       </div>
