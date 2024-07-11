@@ -17,12 +17,12 @@ export const useGetMatches = (playerId: string) => {
   return useInfiniteQuery({
     queryKey: ['matches', playerId],
     queryFn: async ({ pageParam = 0 }) => {
-      const res = await http.get(`/Player/${playerId}/matches?take=5&skip=${pageParam}`)
+      const res = await http.get(`/Player/${playerId}/matches?take=10&skip=${pageParam}`)
       return res.data
     },
     getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length === 5) {
-        return allPages.length * 5
+      if (lastPage.length === 10) {
+        return allPages.length * 10
       }
 
       return undefined
