@@ -1,6 +1,6 @@
 import { useRoutes } from "react-router-dom"
 import { Dashboard, Profile } from "../pages"
-import Layout from '@/components/App/layout'
+import Layout from "../components/App/layout"
 
 export default function BaseRouter() {
   const routes = useRoutes([

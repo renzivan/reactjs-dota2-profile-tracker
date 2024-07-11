@@ -1,5 +1,7 @@
-
-export default function LevelCircle({ level }: number) {
+type LevelCircleProps = {
+  level: number
+}
+export default function LevelCircle({ level }: LevelCircleProps) {
   const maxLevel = 30
 
   // Calculate the percentage of the border to be shown

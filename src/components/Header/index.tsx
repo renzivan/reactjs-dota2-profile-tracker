@@ -1,25 +1,26 @@
 import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect } from 'react'
 import { Switch } from "../../components/ui/switch"
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Button } from '../../components/ui/button'
+import { Input } from '../../components/ui/input'
 import { Label } from "../ui/label"
 import { setDarkMode } from "../../store/reducer/darkMode"
 import { useDispatch, useSelector } from "react-redux"
 import { setPlayerId } from "../../store/reducer/playerId"
 import './index.css'
+import { RootState } from "../../store"
 
 export default function Header() {
   const dispatch = useDispatch()
-  const darkMode = useSelector(state => state.darkMode.value)
+  const darkMode = useSelector((state: RootState) => state.darkMode.value)
   const navigate = useNavigate()
   const [searchInput, setSearchInput] = useState<string>('')
 
-  const handleChangeInput = (val) => {
+  const handleChangeInput = (val: string) => {
     setSearchInput(val)
   }
 
-  const handleSubmitSearch = (evt) => {
+  const handleSubmitSearch = (evt: React.FormEvent<HTMLFormElement>) => {
     navigate(`/profile/${searchInput}`)
     dispatch(setPlayerId(searchInput))
     evt.preventDefault()

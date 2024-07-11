@@ -1,10 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit"
 
+type ItemType = {
+  id: number,
+  shortName: string,
+  displayName: string
+}
+
+interface ItemsState {
+  value: ItemType[]
+}
+
+const initialState: ItemsState = {
+  value: [],
+}
+
 export const itemsSlice = createSlice({
   name: 'items',
-  initialState: {
-    value: []
-  },
+  initialState,
   reducers: {
     setItems: (state, action) => {
       state.value = action.payload

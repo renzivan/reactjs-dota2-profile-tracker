@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosInstance } from "axios"
+import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig, AxiosHeaders  } from "axios"
+
+interface THttpModuleOptions extends AxiosRequestConfig {}
 
 class HttpService {
   private http: AxiosInstance
@@ -7,28 +9,30 @@ class HttpService {
   constructor(private readonly instance = axios) {
     this.http = this.instance.create({
       baseURL: import.meta.env.VITE_API_URL,
-      timeout: 30000,
-      paramsSerializer: function (params) {
-        return qs.stringify(params, {
-          encode: false,
-        })
-      },
+      timeout: 30000
     })
   }
 
   private interceptor() {
     this.http.interceptors.request.use((config) => {
-      config.headers = {
+      const headers: AxiosHeaders = new AxiosHeaders({
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`
-      }
+        Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
+      })
+
+      config.headers = headers
 
       return config
     })
 
-    this.http.interceptors.response.use(async (response: AxiosResponse) => {
-      return response
-    })
+    this.http.interceptors.response.use(
+      async (response: AxiosResponse) => response,
+      async (error) => {
+        console.error('error: ', error);
+        // Reject the promise with the error so the caller can handle it
+        return Promise.reject(error);
+      }
+    )
   }
 
   get<T = any>(
@@ -40,19 +44,8 @@ class HttpService {
     return this.http
       .get(url, {
         params: data && data,
-        validateStatus: (status: any) =>
-          status === 200,
+        validateStatus: (status: any) => status === 200,
         ...config,
-      })
-      .catch((error) => {
-        // TempFix: If Token expired, then redirect user to login page
-        if (error.response.status === 401) {
-          cookieHelper.removeCookie("access_token")
-        }
-        throw error(
-          "Server is busy, please try again later",
-          501
-        )
       })
   }
 }

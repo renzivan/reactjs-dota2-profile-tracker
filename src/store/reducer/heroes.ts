@@ -1,10 +1,27 @@
 import { createSlice } from "@reduxjs/toolkit"
+type Talent = {
+  abilityId: number,
+  slot: number
+}
+
+type HeroType = {
+  id: number,
+  talents: Talent[],
+  shortName: string,
+  displayName: string
+}
+
+interface HeroesState {
+  value: HeroType[]
+}
+
+const initialState: HeroesState = {
+  value: [],
+}
 
 export const heroesSlice = createSlice({
   name: 'heroes',
-  initialState: {
-    value: []
-  },
+  initialState,
   reducers: {
     setHeroes: (state, action) => {
       state.value = action.payload

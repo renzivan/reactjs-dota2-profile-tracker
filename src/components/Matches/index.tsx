@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Button } from "../ui/button"
@@ -18,25 +19,29 @@ import { setLobbies } from "../../store/reducer/lobbies"
 
 import RankTier from "../RankTier"
 import { Separator } from "../ui/separator"
-import { Tooltip } from "@/components/ui/tooltip"
 import LevelCircle from "../LevelCircle"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "../ui/accordion"
 import Talent from "../Talent"
 import Spinner from "../Spinner"
+import { Tooltip } from "../ui/tooltip"
+import { RootState } from "../../store"
 
-export default function Matches({ playerId }) {
+type MatchesProps = {
+  playerId: string | undefined
+}
+
+export default function Matches({ playerId }: MatchesProps) {
   const elementRef = useRef(null)
-
-  const abilities = useSelector(state => state.abilities.value)
-  const gameModes = useSelector(state => state.gameModes.value)
-  const heroes = useSelector(state => state.heroes.value)
-  const items = useSelector(state => state.items.value)
-  const lobbies = useSelector(state => state.lobbies.value)
+  const abilities = useSelector((state: RootState) => state.abilities.value)
+  const gameModes = useSelector((state: RootState) => state.gameModes.value)
+  const heroes = useSelector((state: RootState) => state.heroes.value)
+  const items = useSelector((state: RootState) => state.items.value)
+  const lobbies = useSelector((state: RootState) => state.lobbies.value)
 
   const dispatch = useDispatch()
   const { data: dataAbilities } = useGetAbilities()
@@ -53,7 +58,7 @@ export default function Matches({ playerId }) {
     isFetchingNextPage,
     isRefetching,
     hasNextPage
-  } = useGetMatches(playerId)
+  } = useGetMatches(playerId || '')
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -96,16 +101,16 @@ export default function Matches({ playerId }) {
     <div className="flex flex-col items-center">
       <div className="flex flex-col container items-center w-full overflow-x-auto mb-5">
         {
-          dataMatches?.pages?.map(page => {
-            return page.map(match => {
-              const lobby = lobbies?.find(it => it.id === match.lobbyType)
-              const gameMode = gameModes?.find(it => it.id === match.gameMode)
+          dataMatches?.pages?.map((page: any) => {
+            return page.map((match: any) => {
+              const lobby = lobbies?.find((it: any) => it.id === match.lobbyType)
+              const gameMode = gameModes?.find((it: any) => it.id === match.gameMode)
               const playerStats = match.players[0]
-              const hero = heroes.find(it => it.id === playerStats.heroId)
+              const hero = heroes.find((it: any) => it.id === playerStats.heroId)
               const side = playerStats.isRadiant ? 'radiant' : 'dire'
               const { displayName: roleName, shortName: roleShortName } = getRole(playerStats.lane, playerStats.role)
               const matchItems = Array.from({ length: 6 }, (_, i) =>
-                items.find(it => it.id === playerStats[`item${i}Id`])
+                items.find((it: any) => it.id === playerStats[`item${i}Id`])
               )
 
               return (
@@ -169,8 +174,8 @@ export default function Matches({ playerId }) {
                     </AccordionTrigger>
                     <AccordionContent>
                       <div className="flex gap-2">
-                        {(hero && abilities) && playerStats?.abilities?.map((ability, index) => {
-                          const abilityFound = abilities?.find(it => it.id === ability.abilityId )
+                        {(hero && abilities) && playerStats?.abilities?.map((ability: any, index: number) => {
+                          const abilityFound = abilities?.find((it: any) => it.id === ability.abilityId )
 
                           if (!abilityFound) return null
 

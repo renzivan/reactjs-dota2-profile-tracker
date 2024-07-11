@@ -1,23 +1,23 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
-import Matches from '@/components/Matches'
-import RankTier from '@/components/RankTier'
+import RankTier from '../../components/RankTier'
 import Spinner from '../../components/Spinner'
 import { useGetPlayer } from '../../services/player.service'
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
-} from "@/components/ui/navigation-menu"
+} from "../../components/ui/navigation-menu"
 import { navigationMenuTriggerStyle } from "../../components/ui/navigation-menu"
 import { Tooltip } from '../../components/ui/tooltip'
 import { getRankName } from '../../lib/utils'
+import Matches from '../../components/Matches'
 
 export function Profile() {
   const location = useLocation()
-  const { playerId } = useParams()
-  const { data, isLoading, isError } = useGetPlayer(playerId)
+  const { playerId } = useParams<{ playerId: string }>()
+  const { data, isLoading, isError } = useGetPlayer(playerId || '')
 
-  const getLinkClassName = (to) => {
+  const getLinkClassName = (to: string) => {
     const isActive = location.pathname === to
     return `${navigationMenuTriggerStyle()} ${isActive ? '!bg-accent' : ''}`
   }
@@ -42,11 +42,6 @@ export function Profile() {
                 Overview
               </Link>
             </NavigationMenuItem>
-            {/* <NavigationMenuItem>
-              <Link to={`/profile/${playerId}/matches`} className={getLinkClassName(`/profile/${playerId}/matches`)}>
-                Matches
-              </Link>
-            </NavigationMenuItem> */}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
@@ -62,12 +57,7 @@ export function Profile() {
           </div>
           <Tooltip
             trigger={<RankTier rank={data.steamAccount.seasonRank} leaderBoard={data.steamAccount.seasonLeaderboardRank} />}
-            content={
-              <p>
-                {getRankName(Math.floor(data.steamAccount.seasonRank / 10))} 
-                {data.steamAccount.seasonRank < 80 && data.steamAccount.seasonRank % 10}
-              </p>
-            }
+            content={<p>{getRankName(Math.floor(data.steamAccount.seasonRank / 10))} {data.steamAccount.seasonRank < 80 && data.steamAccount.seasonRank % 10}</p>}
           />
         </div>
       </div>

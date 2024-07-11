@@ -1,10 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit"
+interface DarkModeState {
+  value: boolean;
+}
+
+const initialState: DarkModeState = {
+  value: true,
+}
 
 export const darkModeSlice = createSlice({
   name: 'darkMode',
-  initialState: {
-    value: true
-  },
+  initialState,
   reducers: {
     setDarkMode: (state, action) => {
       state.value = action.payload
