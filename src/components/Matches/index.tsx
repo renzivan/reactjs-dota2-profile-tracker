@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Button } from "../ui/button"
 import { formatTimestamp, getRankName, getRole, secToMS } from "../../lib/utils"
@@ -29,6 +29,8 @@ import {
 import Talent from "../Talent"
 
 export default function Matches({ playerId }) {
+  const elementRef = useRef(null)
+
   const abilities = useSelector(state => state.abilities.value)
   const gameModes = useSelector(state => state.gameModes.value)
   const heroes = useSelector(state => state.heroes.value)
@@ -53,6 +55,24 @@ export default function Matches({ playerId }) {
   } = useGetMatches(playerId)
 
   useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage()
+      }
+    }, { threshold: 0.0 }) // 10% of the element is visible
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current)
+    }
+
+    return () => {
+      if (elementRef.current) {
+        observer.unobserve(elementRef.current)
+      }
+    }
+  }, [elementRef, fetchNextPage, hasNextPage])
+
+  useEffect(() => {
     if (dataAbilities && abilities.length === 0) {
       dispatch(setAbilities(Object.values(dataAbilities)))
     }
@@ -69,10 +89,11 @@ export default function Matches({ playerId }) {
       dispatch(setLobbies(Object.values(dataLobbies)))
     }
   }, [playerId, dataHeroes, dispatch, heroes, dataItems, items, dataLobbies, lobbies, dataGameModes, gameModes, dataAbilities, abilities])
+  console.log('dataMatches: ', dataMatches)
 
   return (
     <div className="flex flex-col items-center">
-      <div className="flex flex-col container items-center w-full overflow-x-auto">
+      <div className="flex flex-col container items-center w-full overflow-x-auto mb-5">
         {
           dataMatches?.pages?.map(page => {
             return page.map(match => {
@@ -174,11 +195,11 @@ export default function Matches({ playerId }) {
           })
         }
       </div>
-      {(dataMatches && !isErrorMatches && hasNextPage) && <Button onClick={() => fetchNextPage()}>Load more</Button>}
-      {isFetchingNextPage && <h1>Loading more matches....</h1>}
-      {((!dataMatches || isErrorMatches) && !isLoadingMatches) && <h1>No matches found or profile is private.</h1>}
-      {isLoadingMatches && <h1>Loading matches....</h1>}
-      {isRefetching && <h1>Loading matches....</h1>}
+      <div ref={elementRef} className="flex flex-col items-center justify-center gap-5">
+        {((!dataMatches || isErrorMatches) && !isLoadingMatches) && <span>No matches found or profile is private.</span>}
+        {(isLoadingMatches || isRefetching || isFetchingNextPage) && <h1>Loading matches....</h1>}
+        {(dataMatches && !isErrorMatches && hasNextPage) && <Button onClick={() => fetchNextPage()}>Load more</Button>}
+      </div>
     </div>
   )
 }
