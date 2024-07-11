@@ -40,6 +40,7 @@
     --gradient-to: 203.08 47.4% 79.04%;
     --spinner-bg: #0f172a;
     --spinner-flash-bg-start: #0002;
+    --talent-inactive: #474747;
   }
 
   .dark {
@@ -77,6 +78,7 @@
     --gradient-to: 207 41% 27%;
     --spinner-bg: #fff;
     --spinner-flash-bg-start: #FFF2;
+    --talent-inactive: #474747;
   }
 }
 
