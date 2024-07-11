@@ -28,9 +28,9 @@ class HttpService {
     this.http.interceptors.response.use(
       async (response: AxiosResponse) => response,
       async (error) => {
-        console.error('error: ', error);
+        console.error('error: ', error)
         // Reject the promise with the error so the caller can handle it
-        return Promise.reject(error);
+        return Promise.reject(error)
       }
     )
   }

@@ -6,7 +6,7 @@ type GameModeType = {
 }
 
 interface GameModesState {
-  value: GameModeType[];
+  value: GameModeType[]
 }
 
 const initialState: GameModesState = {

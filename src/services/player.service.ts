@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { http } from "./config.service";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
+import { http } from "./config.service"
 
 interface Player {
   id: number
@@ -48,25 +48,25 @@ export const useGetPlayer = (playerId: string) => {
   return useQuery<Player>({
     queryKey: ['player', playerId],
     queryFn: async () => {
-      const res = await http.get(`/Player/${playerId}`);
-      return res.data;
+      const res = await http.get(`/Player/${playerId}`)
+      return res.data
     }
-  });
-};
+  })
+}
 
 export const useGetMatches = (playerId: string) => {
   return useInfiniteQuery<Match[]>({
     queryKey: ['matches', playerId],
     queryFn: async ({ pageParam = 0 }) => {
-      const res = await http.get(`/Player/${playerId}/matches?take=10&skip=${pageParam}`);
-      return res.data;
+      const res = await http.get(`/Player/${playerId}/matches?take=10&skip=${pageParam}`)
+      return res.data
     },
     getNextPageParam: (lastPage, allPages) => {
       if (lastPage.length === 10) {
-        return allPages.length * 10;
+        return allPages.length * 10
       }
-      return undefined;
+      return undefined
     },
     initialPageParam: 0
-  });
-};
+  })
+}

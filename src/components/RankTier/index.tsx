@@ -1,8 +1,8 @@
 type RankTierProps = {
-  rank: number;
-  leaderBoard?: number;
-  width?: number;
-};
+  rank: number
+  leaderBoard?: number
+  width?: number
+}
 
 export default function RankTier({
   rank,
@@ -12,25 +12,25 @@ export default function RankTier({
 
   const getRankImage = () => {
     if (!rank) {
-      return '/ranks/rank_icon_0.png';
+      return '/ranks/rank_icon_0.png'
     }
 
     if (leaderBoard !== undefined && leaderBoard > 10 && leaderBoard <= 100) {
-      return '/ranks/rank_icon_8b.png';
+      return '/ranks/rank_icon_8b.png'
     }
 
     if (leaderBoard !== undefined && leaderBoard <= 10) {
-      return '/ranks/rank_icon_8c.png';
+      return '/ranks/rank_icon_8c.png'
     }
 
-    return `/ranks/rank_icon_${rank.toString()[0]}.png`;
-  };
+    return `/ranks/rank_icon_${rank.toString()[0]}.png`
+  }
 
   const getTierImage = () => {
-    if (!rank) return '';
+    if (!rank) return ''
 
-    return `/ranks/rank_star_${rank.toString()[1]}.png`;
-  };
+    return `/ranks/rank_star_${rank.toString()[1]}.png`
+  }
 
   return (
     <div className="relative">
@@ -46,5 +46,5 @@ export default function RankTier({
         <div className="font-bold text-amber-200 absolute bottom-2 left-0 right-0 flex justify-center">{leaderBoard}</div>
       }
     </div>
-  );
+  )
 }

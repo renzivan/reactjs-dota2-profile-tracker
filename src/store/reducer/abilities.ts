@@ -11,7 +11,7 @@ type AbilityType = {
 }
 
 interface AbilitiesState {
-  value: AbilityType[];
+  value: AbilityType[]
 }
 
 const initialState: AbilitiesState = {

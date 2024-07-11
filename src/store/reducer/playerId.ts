@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 
 interface playerIdState {
-  value: string;
+  value: string
 }
 
 const initialState: playerIdState = {

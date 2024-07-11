@@ -3,10 +3,10 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 import { cn } from "../../lib/utils"
 
 interface TooltipProps {
-  trigger: React.ReactNode;
-  content: React.ReactNode;
-  sideOffset?: number;
-  className?: string;
+  trigger: React.ReactNode
+  content: React.ReactNode
+  sideOffset?: number
+  className?: string
 }
 
 const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
@@ -30,8 +30,8 @@ const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
       </TooltipPrimitive.Root>
     </TooltipPrimitive.Provider>
   )
-);
+)
 
-Tooltip.displayName = TooltipPrimitive.Content.displayName;
+Tooltip.displayName = TooltipPrimitive.Content.displayName
 
-export { Tooltip };
+export { Tooltip }
