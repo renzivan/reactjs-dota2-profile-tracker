@@ -11,8 +11,11 @@ import { navigationMenuTriggerStyle } from "../../components/ui/navigation-menu"
 import { Tooltip } from '../../components/ui/tooltip'
 import { getRankName } from '../../lib/utils'
 import Matches from '../../components/Matches'
+import { useState } from 'react'
+import { Skeleton } from '../../components/ui/skeleton'
 
 export function Profile() {
+  const [isLoadingProfileImg, setIsLoadingProfileImg] = useState(true)
   const location = useLocation()
   const { playerId } = useParams<{ playerId: string }>()
   const { data, isLoading, isError } = useGetPlayer(playerId || '')
@@ -49,7 +52,13 @@ export function Profile() {
         <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex flex-col text-center items-center gap-4 md:flex-row">
             <div className="rounded-full overflow-hidden border border-2 border-red-400 w-28 h-28 min-w-28 min-h-28">
-              <img src={data.steamAccount.avatar} alt="" className="object-cover w-full h-full" />
+              <Skeleton className={`w-full h-full rounded-full bg-background ${isLoadingProfileImg ? 'block' : 'hidden'}`} />
+              <img
+                src={data.steamAccount.avatar}
+                onLoad={() => setIsLoadingProfileImg(false)}
+                alt=""
+                className={`object-cover w-full h-full ${isLoadingProfileImg ? 'hidden' : 'block'}`}
+              />
             </div>
             <a href={data.steamAccount.profileUri} target="_blank" className="hover:underline text-3xl">
               <span className="font-bold">{data.steamAccount.name}</span>
