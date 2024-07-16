@@ -2,13 +2,13 @@ import { Badge } from "../../components/ui/badge"
 
 export function Dashboard() {
   return (
-    <div className="mt-16 flex flex-col items-center">
+    <div className="mt-6 md:mt-12 flex flex-col items-center">
       <div>
         <div>Example Player ID: 131933530</div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex flex-col items-center flex-wrap md:gap-2 md:flex-row">
         <a className="hover:underline" target="_blank" href="https://github.com/renzivan/reactjs-dota2-profile-tracker">Source Code Repository</a>
-        <span>|</span>
+        <span className="hidden md:block">|</span>
         <a className="hover:underline" target="_blank" href="mailto:renzivanyapenguio@gmail.com">renzivanyapenguio@gmail.com</a>
       </div>
       <div className="mt-5 flex justify-evenly gap-2 max-w-64 flex-wrap">

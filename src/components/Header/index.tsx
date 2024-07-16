@@ -48,14 +48,14 @@ export default function Header() {
             </Label>
           </div>
         </div>
-        <div className="flex justify-between">
+        <div className="flex flex-wrap justify-center gap-4 md:justify-between">
           <Link to="/" className="flex gap-3 items-center">
             <img src="/logo.png" alt="" className="w-12" />
             <span className="logo-text text-4xl font-semibold pb-1">DOTACTICS</span>
           </Link>
           <form onSubmit={handleSubmitSearch} className="flex gap-3">
             <Input
-              className="md:w-96"
+              className="md:w-[250px] lg:w-[350px]"
               type="text"
               placeholder="Search"
               onChange={(evt) => handleChangeInput(evt.target.value)}

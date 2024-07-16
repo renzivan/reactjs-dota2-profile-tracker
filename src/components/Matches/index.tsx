@@ -172,7 +172,7 @@ export default function Matches({ playerId }: MatchesProps) {
                         </div>
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionContent className="">
                       <div className="flex gap-2">
                         {(hero && abilities) && playerStats?.abilities?.map((ability: any, index: number) => {
                           const abilityFound = abilities?.find((it: any) => it.id === ability.abilityId )
@@ -188,7 +188,7 @@ export default function Matches({ playerId }: MatchesProps) {
                             :
                             <Tooltip
                               key={index}
-                              trigger={<img src={`https://cdn.stratz.com/images/dota2/abilities/${abilityFound.name}.png`} className="w-8 h-8 rounded" alt="" />}
+                              trigger={<img src={`https://cdn.stratz.com/images/dota2/abilities/${abilityFound.name}.png`} className="w-8 h-8 min-w-8 min-h-8 rounded" alt="" />}
                               content={<p>{abilityFound.language.displayName}</p>}
                             />
                         })}
