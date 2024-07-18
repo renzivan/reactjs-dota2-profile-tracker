@@ -1,17 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
-type Talent = {
-  abilityId: number,
-  slot: number
-}
+import { HeroType } from "../../lib/types"
 
-type HeroType = {
-  id: number,
-  talents: Talent[],
-  shortName: string,
-  displayName: string
-}
-
-interface HeroesState {
+type HeroesState = {
   value: HeroType[]
 }
 

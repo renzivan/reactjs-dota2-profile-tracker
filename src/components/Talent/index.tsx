@@ -1,13 +1,9 @@
+import { TalentType } from "../../lib/types"
 import TalentTree from "./talent-tree.component"
 
-type Talent = {
+interface TalentProps {
   abilityId: number,
-  slot: number
-}
-
-type TalentProps = {
-  abilityId: number,
-  heroTalents: Talent[]
+  heroTalents: TalentType[]
 }
 
 export default function Talent({ abilityId, heroTalents }: TalentProps) {

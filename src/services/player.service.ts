@@ -1,63 +1,22 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { http } from "./config.service"
-
-interface Player {
-  id: number
-  steamAccount: {
-    avatar: string
-    profileUri: string
-    name: string
-    seasonRank: number
-    seasonLeaderboardRank: number
-  }
-}
-
-type MatchPlayerType = {
-  isRadiant: boolean
-  heroId: number
-  lane: number
-  role: number
-  items: string[]
-  level: number
-  isVictory: boolean
-  numKills: number
-  numDeaths: number
-  numAssists: number
-}
-
-interface Match {
-  id: number
-  lobbyType: number
-  gameMode: number
-  players: MatchPlayerType[]
-  rank: number
-  bracket: number
-  durationSeconds: number
-  endDateTime: number
-  abilities: {
-    id: number
-    language: {
-      displayName: string
-      name: string
-    }
-  }
-}
+import { MatchType, PlayerType } from "../lib/types"
 
 export const useGetPlayer = (playerId: string) => {
-  return useQuery<Player>({
+  return useQuery<PlayerType>({
     queryKey: ['player', playerId],
     queryFn: async () => {
-      const res = await http.get<Player>(`/Player/${playerId}`)
+      const res = await http.get<PlayerType>(`/Player/${playerId}`)
       return res.data
     }
   })
 }
 
 export const useGetMatches = (playerId: string) => {
-  return useInfiniteQuery<Match[]>({
+  return useInfiniteQuery<MatchType[]>({
     queryKey: ['matches', playerId],
     queryFn: async ({ pageParam = 0 }) => {
-      const res = await http.get<Match[]>(`/Player/${playerId}/matches?take=10&skip=${pageParam}`)
+      const res = await http.get<MatchType[]>(`/Player/${playerId}/matches?take=10&skip=${pageParam}`)
       return res.data
     },
     getNextPageParam: (lastPage, allPages) => {

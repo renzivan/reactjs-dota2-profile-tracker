@@ -1,4 +1,4 @@
-type TalentTreeProps = {
+interface TalentTreeProps {
   slot: number,
   className: string
 }

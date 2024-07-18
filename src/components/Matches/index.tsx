@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Button } from "../ui/button"
@@ -98,10 +97,10 @@ export default function Matches({ playerId }: MatchesProps) {
     <div className="flex flex-col items-center">
       <div className="flex flex-col container items-center w-full overflow-x-auto mb-5">
         {
-          dataMatches?.pages?.map((page: any) => {
+          dataMatches?.pages?.map((page) => {
             return page.map((match: MatchType) => {
-              const lobby = lobbies?.find((it: any) => it.id === match.lobbyType)
-              const gameMode = gameModes?.find((it: any) => it.id === match.gameMode)
+              const lobby = lobbies?.find((it) => it.id === match.lobbyType)
+              const gameMode = gameModes?.find((it) => it.id === match.gameMode)
               const playerStats = match.players[0]
               const hero = heroes.find((it) => it.id === playerStats.heroId) as HeroType
               const side = playerStats.isRadiant ? 'radiant' : 'dire'
@@ -151,7 +150,7 @@ export default function Matches({ playerId }: MatchesProps) {
                     </AccordionTrigger>
                     <AccordionContent className="">
                       <div className="flex gap-2">
-                        {(hero && abilities) && playerStats?.abilities?.map((ability: any, index: number) => {
+                        {(hero && abilities) && playerStats?.abilities?.map((ability, index) => {
                           const abilityFound = abilities?.find((it) => it.id === ability.abilityId )
 
                           if (!abilityFound) return null
