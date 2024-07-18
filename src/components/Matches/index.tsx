@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Button } from "../ui/button"
-import { formatTimestamp, getRankName, getRole, secToMS } from "../../lib/utils"
+import { formatTimestamp, getRankName, secToMS } from "../../lib/utils"
 
 import { useGetAbilities } from "../../services/abilities.service"
 import { useGetMatches } from "../../services/player.service"
@@ -30,9 +30,11 @@ import Talent from "../Talent"
 import Spinner from "../Spinner"
 import { Tooltip } from "../ui/tooltip"
 import { RootState } from "../../store"
+import Role from "./components/role.component"
+import Hero from "./components/hero.component"
 
 type MatchesProps = {
-  playerId: string | undefined
+  playerId?: string
 }
 
 export default function Matches({ playerId }: MatchesProps) {
@@ -108,7 +110,6 @@ export default function Matches({ playerId }: MatchesProps) {
               const playerStats = match.players[0]
               const hero = heroes.find((it: any) => it.id === playerStats.heroId)
               const side = playerStats.isRadiant ? 'radiant' : 'dire'
-              const { displayName: roleName, shortName: roleShortName } = getRole(playerStats.lane, playerStats.role)
               const matchItems = Array.from({ length: 6 }, (_, i) =>
                 items.find((it: any) => it.id === playerStats[`item${i}Id`])
               )
@@ -118,17 +119,11 @@ export default function Matches({ playerId }: MatchesProps) {
                   <AccordionItem value="item-1">
                     <AccordionTrigger>
                       <div className="flex items-center justify-between w-full py-2 cursor-pointer">
-                        <div className="flex items-center justify-between min-w-40">
-                          <Tooltip 
-                            trigger={<img src={`https://cdn.stratz.com/images/dota2/heroes/${hero?.shortName}_horz.png`} alt="" className="w-24 rounded" />}
-                            content={<p>{hero?.displayName}</p>}
-                          />
-                          <Tooltip 
-                            trigger={<img src={`/roles/${roleShortName}.svg`} alt="" className="w-7"/>}
-                            content={<p>{roleName}</p>}
-                          />
-                          <Separator orientation="vertical" className="h-12" />
+                        <div className="flex items-center justify-between pr-5 min-w-40">
+                          <Hero displayName={hero?.displayName} shortName={hero?.shortName}/>
+                          <Role lane={playerStats.lane} role={playerStats.role} />
                         </div>
+                        <Separator orientation="vertical" className="h-12" />
 
                         <div className="flex items-center justify-between w-full px-5">
                           <div className="flex items-center gap-5 min-w-48">
@@ -175,7 +170,7 @@ export default function Matches({ playerId }: MatchesProps) {
                     <AccordionContent className="">
                       <div className="flex gap-2">
                         {(hero && abilities) && playerStats?.abilities?.map((ability: any, index: number) => {
-                          const abilityFound = abilities?.find((it: any) => it.id === ability.abilityId )
+                          const abilityFound = abilities?.find((it) => it.id === ability.abilityId )
 
                           if (!abilityFound) return null
 
