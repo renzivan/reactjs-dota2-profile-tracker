@@ -8,13 +8,11 @@ import { useGetAbilities } from "../../services/abilities.service"
 import { useGetMatches } from "../../services/player.service"
 import { useGetGameModes } from "../../services/gameModes.service"
 import { useGetHeroes } from "../../services/heroes.service"
-import { useGetItems } from "../../services/items.service"
 import { useGetLobbies } from "../../services/lobbies.service"
 
 import { setAbilities } from "../../store/reducer/abilities"
 import { setGameModes } from "../../store/reducer/gameModes"
 import { setHeroes } from "../../store/reducer/heroes"
-import { setItems } from "../../store/reducer/items"
 import { setLobbies } from "../../store/reducer/lobbies"
 
 import RankTier from "../RankTier"
@@ -31,9 +29,11 @@ import Spinner from "../Spinner"
 import { Tooltip } from "../ui/tooltip"
 import { RootState } from "../../store"
 import Role from "./components/role.component"
-import Hero from "./components/hero.component"
+import MatchHero from "./components/hero.component"
+import Items from "./components/items.component"
+import { HeroType, MatchType } from "../../lib/types"
 
-type MatchesProps = {
+interface MatchesProps {
   playerId?: string
 }
 
@@ -42,12 +42,10 @@ export default function Matches({ playerId }: MatchesProps) {
   const abilities = useSelector((state: RootState) => state.abilities.value)
   const gameModes = useSelector((state: RootState) => state.gameModes.value)
   const heroes = useSelector((state: RootState) => state.heroes.value)
-  const items = useSelector((state: RootState) => state.items.value)
   const lobbies = useSelector((state: RootState) => state.lobbies.value)
 
   const dispatch = useDispatch()
   const { data: dataAbilities } = useGetAbilities()
-  const { data: dataItems } = useGetItems()
   const { data: dataHeroes } = useGetHeroes()
   const { data: dataLobbies } = useGetLobbies()
   const { data: dataGameModes } = useGetGameModes()
@@ -90,13 +88,10 @@ export default function Matches({ playerId }: MatchesProps) {
     if (dataHeroes && heroes.length === 0) {
       dispatch(setHeroes(Object.values(dataHeroes)))
     }
-    if (dataItems && items.length === 0) {
-      dispatch(setItems(Object.values(dataItems)))
-    }
     if (dataLobbies && lobbies.length === 0) {
       dispatch(setLobbies(Object.values(dataLobbies)))
     }
-  }, [playerId, dataHeroes, dispatch, heroes, dataItems, items, dataLobbies, lobbies, dataGameModes, gameModes, dataAbilities, abilities])
+  }, [playerId, dataHeroes, dispatch, heroes, dataLobbies, lobbies, dataGameModes, gameModes, dataAbilities, abilities])
   console.log('dataMatches: ', dataMatches)
 
   return (
@@ -104,15 +99,12 @@ export default function Matches({ playerId }: MatchesProps) {
       <div className="flex flex-col container items-center w-full overflow-x-auto mb-5">
         {
           dataMatches?.pages?.map((page: any) => {
-            return page.map((match: any) => {
+            return page.map((match: MatchType) => {
               const lobby = lobbies?.find((it: any) => it.id === match.lobbyType)
               const gameMode = gameModes?.find((it: any) => it.id === match.gameMode)
               const playerStats = match.players[0]
-              const hero = heroes.find((it: any) => it.id === playerStats.heroId)
+              const hero = heroes.find((it) => it.id === playerStats.heroId) as HeroType
               const side = playerStats.isRadiant ? 'radiant' : 'dire'
-              const matchItems = Array.from({ length: 6 }, (_, i) =>
-                items.find((it: any) => it.id === playerStats[`item${i}Id`])
-              )
 
               return (
                 <Accordion key={match.id} className="w-full" type="single" collapsible>
@@ -120,7 +112,7 @@ export default function Matches({ playerId }: MatchesProps) {
                     <AccordionTrigger>
                       <div className="flex items-center justify-between w-full py-2 cursor-pointer">
                         <div className="flex items-center justify-between pr-5 min-w-40">
-                          <Hero displayName={hero?.displayName} shortName={hero?.shortName}/>
+                          <MatchHero displayName={hero?.displayName} shortName={hero?.shortName}/>
                           <Role lane={playerStats.lane} role={playerStats.role} />
                         </div>
                         <Separator orientation="vertical" className="h-12" />
@@ -139,17 +131,7 @@ export default function Matches({ playerId }: MatchesProps) {
                               trigger={<RankTier rank={match.rank} width={11} />}
                               content={<p>{getRankName(match.bracket)}-tier Match</p>}
                             />
-                            <div className="flex flex-wrap max-w-32 items-center justify-center gap-1">
-                              {matchItems?.map((item, index) => (
-                                item ? (      
-                                  <Tooltip
-                                    key={index}
-                                    trigger={<img src={`https://cdn.stratz.com/images/dota2/items/${item?.shortName}.png`} className="rounded w-10 h-7" alt="" />}
-                                    content={<p>{item?.displayName}</p>}
-                                  />
-                                ) : (<div key={index} className="bg-accent rounded w-10 h-7"/>)
-                              ))}
-                            </div>
+                            <Items matchItems={[playerStats.item0Id, playerStats.item1Id, playerStats.item2Id, playerStats.item3Id, playerStats.item4Id, playerStats.item5Id,]} />
                           </div>
                         </div>
 
