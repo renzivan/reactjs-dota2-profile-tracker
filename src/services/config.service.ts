@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig, AxiosHeaders  } from "axios"
+import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig, AxiosHeaders } from "axios"
 
 interface THttpModuleOptions extends AxiosRequestConfig {}
 
@@ -9,13 +8,15 @@ class HttpService {
   constructor(private readonly instance = axios) {
     this.http = this.instance.create({
       baseURL: import.meta.env.VITE_API_URL,
-      timeout: 30000
+      timeout: 30000,
     })
+
+    this.setupInterceptors()
   }
 
-  private interceptor() {
+  private setupInterceptors() {
     this.http.interceptors.request.use((config) => {
-      const headers: AxiosHeaders = new AxiosHeaders({
+      const headers = new AxiosHeaders({
         'Content-Type': 'application/json',
         Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
       })
@@ -35,18 +36,16 @@ class HttpService {
     )
   }
 
-  get<T = any>(
+  get<T = unknown>(
     url: string,
-    data?: Record<string, any>,
+    data?: Record<string, unknown>,
     config?: THttpModuleOptions
-  ): Promise<AxiosResponse<T & any>> {
-    this.interceptor()
-    return this.http
-      .get(url, {
-        params: data && data,
-        validateStatus: (status: any) => status === 200,
-        ...config,
-      })
+  ): Promise<AxiosResponse<T>> {
+    return this.http.get<T>(url, {
+      params: data,
+      validateStatus: (status: number) => status === 200,
+      ...config,
+    })
   }
 }
 
