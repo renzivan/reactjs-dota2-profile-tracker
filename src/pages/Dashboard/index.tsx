@@ -4,7 +4,7 @@ export function Dashboard() {
   return (
     <div className="mt-6 md:mt-12 flex flex-col items-center">
       <div>
-        <div>Example Player ID: 131933530</div>
+        <div>Example Player ID: 131375636</div>
       </div>
       <div className="flex flex-col items-center flex-wrap md:gap-2 md:flex-row">
         <a className="hover:underline" target="_blank" href="https://github.com/renzivan/reactjs-dota2-profile-tracker">Source Code Repository</a>
