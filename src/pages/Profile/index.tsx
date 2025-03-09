@@ -18,7 +18,7 @@ export function Profile() {
   const [isLoadingProfileImg, setIsLoadingProfileImg] = useState(true)
   const location = useLocation()
   const { playerId } = useParams<{ playerId: string }>()
-  const { data, loading } = useGetPlayer(playerId || '')
+  const { data, loading } = useGetPlayer(Number(playerId) || 0)
 
   const getLinkClassName = (to: string) => {
     const isActive = location.pathname === to

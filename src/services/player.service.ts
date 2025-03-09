@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
 import { useState } from 'react';
+import { MatchType } from '../lib/types';
 
 const GET_PLAYER = gql`
   query GetPlayer($playerId: Long!) {
@@ -103,7 +104,7 @@ export const useGetMatches = (playerId: string) => {
         const mergedMatches = [
           ...existingMatches,
           ...newMatches.filter(
-            (match) => !existingMatches.some((m) => m.id === match.id)
+            (match: MatchType) => !existingMatches.some((m: MatchType) => m.id === match.id)
           ),
         ];
 

@@ -22,8 +22,8 @@ export type PlayerType = {
 export type MatchPlayerType = {
   isRadiant: boolean
   heroId: number
-  lane: number
-  role: number
+  lane: string
+  role: string
   position: number
   item0Id: number
   item1Id: number
@@ -42,7 +42,7 @@ export type MatchPlayerType = {
 export type MatchType = {
   id: number
   lobbyType: number
-  gameMode: number
+  gameMode: string
   players: MatchPlayerType[]
   rank: number
   bracket: number
