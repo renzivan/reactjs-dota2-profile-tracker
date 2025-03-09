@@ -15,11 +15,11 @@ export default function RankTier({
       return '/ranks/rank_icon_0.png'
     }
 
-    if (leaderBoard !== undefined && leaderBoard > 10 && leaderBoard <= 100) {
+    if (leaderBoard && leaderBoard > 10 && leaderBoard <= 100) {
       return '/ranks/rank_icon_8b.png'
     }
 
-    if (leaderBoard !== undefined && leaderBoard <= 10) {
+    if (leaderBoard && leaderBoard <= 10) {
       return '/ranks/rank_icon_8c.png'
     }
 

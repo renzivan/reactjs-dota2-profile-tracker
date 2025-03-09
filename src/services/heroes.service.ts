@@ -1,14 +1,23 @@
-import { useQuery } from "@tanstack/react-query"
-import { http } from "./config.service"
-import { HeroType } from "../lib/types"
+import { gql, useQuery } from '@apollo/client';
+
+const GET_HEROES = gql`
+  query GetHeroes {
+    constants {
+      heroes {
+        id
+        displayName
+        shortName
+        talents {
+          abilityId
+          slot
+        }
+      }
+    }
+  }
+`;
 
 export const useGetHeroes = () => {
-  return useQuery({
-    queryKey: ['heroes'],
-    queryFn: async () => {
-      const res = await http.get<HeroType[]>('/Hero')
-
-      return res.data
-    }
-  })
+  const res = useQuery(GET_HEROES);
+  
+  return { ...res, data: res.data?.constants.heroes };
 }

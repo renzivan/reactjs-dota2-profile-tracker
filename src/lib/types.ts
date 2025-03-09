@@ -24,6 +24,7 @@ export type MatchPlayerType = {
   heroId: number
   lane: number
   role: number
+  position: number
   item0Id: number
   item1Id: number
   item2Id: number
@@ -32,9 +33,9 @@ export type MatchPlayerType = {
   item5Id: number
   level: number
   isVictory: boolean
-  numKills: number
-  numDeaths: number
-  numAssists: number
+  kills: number
+  deaths: number
+  assists: number
   abilities: AbilityType[]
 }
 

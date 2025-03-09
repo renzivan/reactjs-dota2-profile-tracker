@@ -5,12 +5,12 @@ import { formatTimestamp, getRankName, secToMS } from "../../lib/utils"
 
 import { useGetAbilities } from "../../services/abilities.service"
 import { useGetMatches } from "../../services/player.service"
-import { useGetGameModes } from "../../services/gameModes.service"
+// import { useGetGameModes } from "../../services/gameModes.service"
 import { useGetHeroes } from "../../services/heroes.service"
 import { useGetLobbies } from "../../services/lobbies.service"
 
 import { setAbilities } from "../../store/reducer/abilities"
-import { setGameModes } from "../../store/reducer/gameModes"
+// import { setGameModes } from "../../store/reducer/gameModes"
 import { setHeroes } from "../../store/reducer/heroes"
 import { setLobbies } from "../../store/reducer/lobbies"
 
@@ -39,7 +39,7 @@ interface MatchesProps {
 export default function Matches({ playerId }: MatchesProps) {
   const elementRef = useRef(null)
   const abilities = useSelector((state: RootState) => state.abilities.value)
-  const gameModes = useSelector((state: RootState) => state.gameModes.value)
+  // const gameModes = useSelector((state: RootState) => state.gameModes.value)
   const heroes = useSelector((state: RootState) => state.heroes.value)
   const lobbies = useSelector((state: RootState) => state.lobbies.value)
 
@@ -47,24 +47,26 @@ export default function Matches({ playerId }: MatchesProps) {
   const { data: dataAbilities } = useGetAbilities()
   const { data: dataHeroes } = useGetHeroes()
   const { data: dataLobbies } = useGetLobbies()
-  const { data: dataGameModes } = useGetGameModes()
+  // const { data: dataGameModes } = useGetGameModes()
 
   const {
     data: dataMatches,
-    isLoading: isLoadingMatches,
-    isError: isErrorMatches,
-    fetchNextPage,
-    isFetchingNextPage,
-    isRefetching,
-    hasNextPage
+    loading,
+    loadMore,
+    isNothingMore
   } = useGetMatches(playerId || '')
+
+  const isPrivate = dataMatches?.length === 0 && !loading
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasNextPage) {
-        fetchNextPage()
+      if (entries[0].isIntersecting && 
+          dataMatches?.length > 0 && 
+          dataMatches?.length % 10 === 0 &&
+          !loading) {
+        loadMore()
       }
-    }, { threshold: 0.0 }) // 10% of the element is visible
+    }, { threshold: 0.0 })
 
     if (elementRef.current) {
       observer.observe(elementRef.current)
@@ -75,32 +77,30 @@ export default function Matches({ playerId }: MatchesProps) {
         observer.unobserve(elementRef.current)
       }
     }
-  }, [elementRef, fetchNextPage, hasNextPage])
+  }, [elementRef, loadMore, dataMatches?.length, loading])
 
   useEffect(() => {
     if (dataAbilities && abilities.length === 0) {
       dispatch(setAbilities(Object.values(dataAbilities)))
     }
-    if (dataGameModes && gameModes.length === 0) {
-      dispatch(setGameModes(Object.values(dataGameModes)))
-    }
+    // if (dataGameModes && gameModes.length === 0) {
+    //   dispatch(setGameModes(Object.values(dataGameModes)))
+    // }
     if (dataHeroes && heroes.length === 0) {
       dispatch(setHeroes(Object.values(dataHeroes)))
     }
     if (dataLobbies && lobbies.length === 0) {
       dispatch(setLobbies(Object.values(dataLobbies)))
     }
-  }, [playerId, dataHeroes, dispatch, heroes, dataLobbies, lobbies, dataGameModes, gameModes, dataAbilities, abilities])
-  console.log('dataMatches: ', dataMatches)
+  }, [playerId, dataHeroes, dispatch, heroes, dataLobbies, lobbies, dataAbilities, abilities])
 
   return (
     <div className="flex flex-col items-center">
       <div className="flex flex-col container items-center w-full overflow-x-auto mb-5">
         {
-          dataMatches?.pages?.map((page) => {
-            return page.map((match: MatchType) => {
+          dataMatches?.map((match: MatchType) => {
               const lobby = lobbies?.find((it) => it.id === match.lobbyType)
-              const gameMode = gameModes?.find((it) => it.id === match.gameMode)
+              // const gameMode = gameModes?.find((it) => it.id === match.gameMode)
               const playerStats = match.players[0]
               const hero = heroes.find((it) => it.id === playerStats.heroId) as HeroType
               const side = playerStats.isRadiant ? 'radiant' : 'dire'
@@ -122,7 +122,7 @@ export default function Matches({ playerId }: MatchesProps) {
                             <div className={`text-black w-7 h-7 flex items-center justify-center font-extrabold rounded ${playerStats.isVictory ? "!bg-emerald-500" : "!bg-red-500"}`}>
                               {playerStats.isVictory ? "W" : "L"}
                             </div>
-                            <div className="text-md min-w-20">{playerStats.numKills} / {playerStats.numDeaths} / {playerStats.numAssists}</div>
+                            <div className="text-md min-w-20">{playerStats.kills} / {playerStats.deaths} / {playerStats.assists}</div>
                             <div className="text-md">{lobby?.name}</div>
                           </div>
                           <div className="flex items-center justify-end gap-3 min-w-52">
@@ -140,7 +140,7 @@ export default function Matches({ playerId }: MatchesProps) {
                             trigger={<img src={`https://cdn.stratz.com/images/dota2/${side}_square.png`} className="h-8 rounded" alt="" />}
                             content={<p className="capitalize">{side}</p>}
                           />
-                          <div className="bg-accent text-sm rounded py-2 min-w-32">{gameMode?.name}</div>
+                          <div className="bg-accent text-sm rounded py-2 min-w-32 capitalize">{match.gameMode.toLowerCase().replace(/_/g, " ")}</div>
                           <div className="flex flex-col items-end">
                             <div className="text-sm">{secToMS(match.durationSeconds)}</div>
                             <div className="text-sm">{formatTimestamp(match.endDateTime)}</div>
@@ -173,14 +173,15 @@ export default function Matches({ playerId }: MatchesProps) {
                   </AccordionItem>
                 </Accordion>
               )
-            })
           })
         }
       </div>
       <div ref={elementRef} className="flex flex-col items-center justify-center gap-5">
-        {((!dataMatches || isErrorMatches) && !isLoadingMatches) && <span>No matches found or profile is private.</span>}
-        {(isLoadingMatches || isRefetching || isFetchingNextPage) && <Spinner />}
-        {(dataMatches && !isErrorMatches && hasNextPage) && <Button onClick={() => fetchNextPage()}>Load more</Button>}
+        {isPrivate && <span>This profile is private</span>}
+        {isNothingMore && <span>No more matches found</span>}
+        {((!dataMatches) && !loading) && <span>No matches found or profile is private.</span>}
+        {(loading) && <Spinner />}
+        {(dataMatches && !isPrivate && !isNothingMore) && <Button onClick={() => loadMore()}>Load more</Button>}
       </div>
     </div>
   )

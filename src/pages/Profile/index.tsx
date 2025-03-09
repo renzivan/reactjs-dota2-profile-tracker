@@ -18,19 +18,18 @@ export function Profile() {
   const [isLoadingProfileImg, setIsLoadingProfileImg] = useState(true)
   const location = useLocation()
   const { playerId } = useParams<{ playerId: string }>()
-  const { data, isLoading, isError } = useGetPlayer(playerId || '')
+  const { data, loading } = useGetPlayer(playerId || '')
 
   const getLinkClassName = (to: string) => {
     const isActive = location.pathname === to
     return `${navigationMenuTriggerStyle()} ${isActive ? '!bg-accent' : ''}`
   }
 
-  if (isLoading || isError || !data) {
+  if (loading || !data) {
     return (
       <div className="flex justify-center mt-16">
-        {isLoading && <Spinner />}
-        {isError && <span>Something went wrong. Please reload page.</span>}
-        {(!data && !isLoading && !isError) && <span>No profile found or profile is private.</span>}
+        {loading && <Spinner />}
+        {(!data && !loading) && <span>No profile found or profile is private.</span>}
       </div>
     )
   }

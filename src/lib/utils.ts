@@ -5,16 +5,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getRole(lane: number, role: number) {
-  if (lane === 2) {
+export function getRole(lane: string, role: string) {
+  if (lane === 'MID_LANE') {
     return { displayName: 'Mid Lane', shortName: 'mid' }
   }
 
-  if (lane === 1) {
-    return role === 0 ? { displayName: 'Safe Lane', shortName: 'safe_lane' } : { displayName: 'Hard Support', shortName: 'hard_support' }
+  if (lane === 'SAFE_LANE') {
+    return role === 'CORE' ? { displayName: 'Safe Lane', shortName: 'safe_lane' } : { displayName: 'Hard Support', shortName: 'hard_support' }
   }
 
-  return role === 1 ? { displayName: 'Soft Support', shortName: 'soft_support' } : { displayName: 'Off Lane', shortName: 'offlane' }
+  return role !== 'CORE' ? { displayName: 'Soft Support', shortName: 'soft_support' } : { displayName: 'Off Lane', shortName: 'offlane' }
 }
 
 export function secToMS(seconds: number) {
@@ -33,7 +33,7 @@ export function formatTimestamp(timestamp: number) {
 
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric'
   })
 }
