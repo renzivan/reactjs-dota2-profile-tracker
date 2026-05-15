@@ -1,24 +1,29 @@
 .spinner {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background-color: var(--spinner-bg);
-  box-shadow: 32px 0 var(--spinner-bg), -32px 0 var(--spinner-bg);
+  box-shadow:
+    0 0 8px var(--spinner-bg),
+    28px 0 var(--spinner-bg),
+    28px 0 8px var(--spinner-bg),
+    -28px 0 var(--spinner-bg),
+    -28px 0 8px var(--spinner-bg);
   position: relative;
-  animation: flash 0.5s ease-out infinite alternate;
+  animation: flash 0.6s ease-out infinite alternate;
 }
 
 @keyframes flash {
   0% {
     background-color: var(--spinner-flash-bg-start);
-    box-shadow: 32px 0 var(--spinner-flash-bg-start), -32px 0 var(--spinner-bg);
+    box-shadow: 28px 0 var(--spinner-flash-bg-start), -28px 0 var(--spinner-bg);
   }
   50% {
     background-color: var(--spinner-bg);
-    box-shadow: 32px 0 var(--spinner-flash-bg-start), -32px 0 var(--spinner-flash-bg-start);
+    box-shadow: 28px 0 var(--spinner-flash-bg-start), -28px 0 var(--spinner-flash-bg-start);
   }
   100% {
     background-color: var(--spinner-flash-bg-start);
-    box-shadow: 32px 0 var(--spinner-bg), -32px 0 var(--spinner-flash-bg-start);
+    box-shadow: 28px 0 var(--spinner-bg), -28px 0 var(--spinner-flash-bg-start);
   }
 }

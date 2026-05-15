@@ -17,7 +17,25 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        display: ['"Russo One"', '"Chakra Petch"', 'system-ui', 'sans-serif'],
+        body: ['"Chakra Petch"', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+      boxShadow: {
+        'neon-sm': '0 0 8px hsl(var(--neon-purple) / 0.6)',
+        'neon':    '0 0 0 1px hsl(var(--neon-purple) / 0.6), 0 0 18px hsl(var(--neon-purple) / 0.55)',
+        'neon-pink': '0 0 0 1px hsl(var(--neon-pink) / 0.6), 0 0 18px hsl(var(--neon-pink) / 0.55)',
+        'neon-cyan': '0 0 0 1px hsl(var(--neon-cyan) / 0.6), 0 0 18px hsl(var(--neon-cyan) / 0.55)',
+      },
       colors: {
+        neon: {
+          purple: "hsl(var(--neon-purple))",
+          pink:   "hsl(var(--neon-pink))",
+          cyan:   "hsl(var(--neon-cyan))",
+          rose:   "hsl(var(--neon-rose))",
+          yellow: "hsl(var(--neon-yellow))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -66,10 +84,20 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "flicker": {
+          "0%, 100%": { opacity: "1" },
+          "41.99%":   { opacity: "1" },
+          "42%":      { opacity: "0.6" },
+          "43%":      { opacity: "1" },
+          "47.99%":   { opacity: "1" },
+          "48%":      { opacity: "0.5" },
+          "49%":      { opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "flicker": "flicker 4s linear infinite",
       },
     },
   },
