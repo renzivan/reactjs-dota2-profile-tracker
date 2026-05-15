@@ -1,0 +1,55 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F4D77A"/>
+      <stop offset="0.5" stop-color="#D9A547"/>
+      <stop offset="1" stop-color="#8B5A2B"/>
+    </linearGradient>
+    <radialGradient id="iris" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0" stop-color="#FFE08A"/>
+      <stop offset="0.55" stop-color="#D9A547"/>
+      <stop offset="1" stop-color="#2A1810"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFD96B" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#FFD96B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ambient glow -->
+  <circle cx="32" cy="32" r="30" fill="url(#glow)"/>
+
+  <!-- shield body -->
+  <path d="M32 3 L57 11 L57 30 C57 45 49 54 32 61 C15 54 7 45 7 30 L7 11 Z"
+        fill="#0F0B07"
+        stroke="url(#gold)" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- inner shield trim -->
+  <path d="M32 8 L52 14.5 L52 30 C52 42.5 45 50 32 55.5 C19 50 12 42.5 12 30 L12 14.5 Z"
+        fill="none"
+        stroke="url(#gold)" stroke-width="0.8" opacity="0.55"/>
+
+  <!-- top notch crest -->
+  <path d="M27 9 L32 4 L37 9 Z" fill="url(#gold)"/>
+  <path d="M30 9 L32 7 L34 9 Z" fill="#0F0B07"/>
+
+  <!-- eye almond -->
+  <path d="M14 32 C20 21 44 21 50 32 C44 43 20 43 14 32 Z"
+        fill="#0B0805"
+        stroke="url(#gold)" stroke-width="1.5"/>
+
+  <!-- iris -->
+  <circle cx="32" cy="32" r="6.2" fill="url(#iris)"/>
+
+  <!-- pupil (diamond — truesight) -->
+  <path d="M32 27.5 L34.4 32 L32 36.5 L29.6 32 Z" fill="#0B0805"/>
+
+  <!-- iris glint -->
+  <circle cx="30.2" cy="30.2" r="0.9" fill="#FFF1B8"/>
+
+  <!-- side rivets -->
+  <circle cx="13" cy="20" r="1.1" fill="url(#gold)"/>
+  <circle cx="51" cy="20" r="1.1" fill="url(#gold)"/>
+  <circle cx="13" cy="44" r="1.1" fill="url(#gold)"/>
+  <circle cx="51" cy="44" r="1.1" fill="url(#gold)"/>
+</svg>

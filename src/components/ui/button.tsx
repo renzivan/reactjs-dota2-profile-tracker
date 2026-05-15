@@ -5,22 +5,22 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "../../lib/utils"
 
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm font-display uppercase tracking-wider ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer corner-cuts",
+  "relative inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm font-display uppercase tracking-[0.18em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-neon-purple to-neon-pink text-white shadow-neon hover:shadow-neon-pink hover:brightness-110",
+          "bg-gradient-to-b from-[hsl(var(--gold-soft))] via-gold to-bronze text-[hsl(220_30%_8%)] shadow-gold hover:brightness-110 hover:shadow-[0_0_0_1px_hsl(var(--gold)/0.7),0_0_30px_-2px_hsl(var(--gold)/0.7)] border border-[hsl(var(--gold)/0.5)]",
         destructive:
-          "bg-neon-rose text-white shadow-[0_0_18px_hsl(var(--neon-rose)/0.6)] hover:brightness-110",
+          "bg-dire text-white shadow-dire hover:brightness-110 border border-[hsl(var(--dire)/0.6)]",
         outline:
-          "border border-neon-purple/60 bg-transparent text-foreground hover:bg-neon-purple/15 hover:shadow-neon-sm hover:text-neon-purple",
+          "border border-gold/50 bg-transparent text-gold hover:bg-gold/10 hover:shadow-gold-sm",
         secondary:
-          "bg-secondary text-secondary-foreground border border-border hover:border-neon-cyan/60 hover:text-neon-cyan",
+          "bg-secondary text-secondary-foreground border border-border hover:border-gold/60 hover:text-gold",
         ghost:
-          "hover:bg-neon-purple/10 hover:text-neon-purple",
+          "hover:bg-gold/10 hover:text-gold",
         link:
-          "text-neon-cyan underline-offset-4 hover:underline",
+          "text-gold underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-5 py-2",

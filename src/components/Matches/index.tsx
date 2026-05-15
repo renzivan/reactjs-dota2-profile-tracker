@@ -97,8 +97,8 @@ export default function Matches({ playerId }: MatchesProps) {
   return (
     <div className="flex flex-col items-center">
       <div className="container mb-3 flex items-center gap-3">
-        <span className="font-display text-xs uppercase tracking-[0.3em] neon-text-cyan">// match.log</span>
-        <div className="flex-1 h-px bg-gradient-to-r from-neon-cyan/60 to-transparent" />
+        <span className="font-display text-xs uppercase tracking-[0.3em] gold-text">// Match History</span>
+        <div className="flex-1 h-px bg-gradient-to-r from-gold/50 to-transparent" />
       </div>
       <div className="flex flex-col container items-center w-full overflow-x-auto mb-5 gap-2">
         {
@@ -112,40 +112,39 @@ export default function Matches({ playerId }: MatchesProps) {
               return (
                 <Accordion
                   key={match.id}
-                  className={`w-full panel corner-cuts relative overflow-hidden border-l-4 ${win ? 'border-l-emerald-400/80 shadow-[inset_4px_0_18px_-8px_rgba(52,211,153,0.6)]' : 'border-l-neon-rose/80 shadow-[inset_4px_0_18px_-8px_hsl(var(--neon-rose)/0.6)]'}`}
+                  className={`w-full panel relative overflow-hidden ${win ? 'stripe-radiant' : 'stripe-dire'}`}
                   type="single"
                   collapsible
                 >
                   <AccordionItem value="item-1" className="border-0">
-                    <AccordionTrigger className="hover:no-underline px-4 py-1 cursor-pointer hover:bg-neon-purple/5 transition-colors">
+                    <AccordionTrigger className="hover:no-underline px-4 py-1 cursor-pointer hover:bg-gold/5 transition-colors">
                       <div className="flex items-center justify-between w-full py-2">
                         <div className="flex items-center justify-between pr-5 min-w-40">
                           <MatchHero displayName={hero?.displayName} shortName={hero?.shortName}/>
                           <Role lane={playerStats.lane} role={playerStats.role} />
                         </div>
-                        <Separator orientation="vertical" className="h-12 bg-neon-purple/30" />
+                        <Separator orientation="vertical" className="h-12 bg-gold/25" />
 
                         <div className="flex items-center justify-between w-full px-5">
                           <div className="flex items-center gap-5 min-w-48">
                             <LevelCircle level={playerStats.level} />
                             <div
-                              className={`w-8 h-8 flex items-center justify-center font-display text-sm rounded-sm corner-cuts ${
+                              className={`w-8 h-8 flex items-center justify-center font-display text-sm rounded-sm ${
                                 win
-                                  ? 'bg-emerald-500/20 text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.5)] border border-emerald-400/60'
-                                  : 'bg-neon-rose/20 text-neon-rose shadow-[0_0_12px_hsl(var(--neon-rose)/0.5)] border border-neon-rose/60'
+                                  ? 'bg-radiant/15 text-radiant border border-radiant/60 shadow-[0_0_10px_hsl(var(--radiant)/0.4)]'
+                                  : 'bg-dire/15 text-dire border border-dire/60 shadow-[0_0_10px_hsl(var(--dire)/0.4)]'
                               }`}
-                              style={{ ['--c' as string]: '4px' }}
                             >
                               {win ? "W" : "L"}
                             </div>
                             <div className="text-sm min-w-20 font-mono">
-                              <span className="text-emerald-400">{playerStats.kills}</span>
+                              <span className="text-radiant">{playerStats.kills}</span>
                               <span className="text-muted-foreground"> / </span>
-                              <span className="text-neon-rose">{playerStats.deaths}</span>
+                              <span className="text-dire">{playerStats.deaths}</span>
                               <span className="text-muted-foreground"> / </span>
-                              <span className="text-neon-cyan">{playerStats.assists}</span>
+                              <span className="text-mana">{playerStats.assists}</span>
                             </div>
-                            <div className="text-xs uppercase tracking-wider text-muted-foreground font-mono">{lobby?.name}</div>
+                            <div className="text-xs uppercase tracking-wider text-muted-foreground font-display">{lobby?.name}</div>
                           </div>
                           <div className="flex items-center justify-end gap-3 min-w-52">
                             <Tooltip
@@ -157,16 +156,16 @@ export default function Matches({ playerId }: MatchesProps) {
                         </div>
 
                         <div className="flex items-center justify-between min-w-72">
-                          <Separator orientation="vertical" className="h-12 bg-neon-purple/30" />
+                          <Separator orientation="vertical" className="h-12 bg-gold/25" />
                           <Tooltip
                             trigger={<img src={`https://cdn.stratz.com/images/dota2/${side}_square.png`} className="h-8 rounded-sm" alt="" />}
                             content={<p className="capitalize">{side}</p>}
                           />
-                          <div className="bg-neon-purple/15 border border-neon-purple/40 text-xs text-neon-purple uppercase tracking-wider rounded-sm py-2 px-2 min-w-32 capitalize font-mono text-center">
+                          <div className="bg-gold/10 border border-gold/40 text-xs text-gold uppercase tracking-[0.18em] rounded-sm py-2 px-2 min-w-32 capitalize font-display text-center">
                             {match.gameMode.toLowerCase().replace(/_/g, " ")}
                           </div>
                           <div className="flex flex-col items-end font-mono">
-                            <div className="text-xs text-neon-cyan">{secToMS(match.durationSeconds)}</div>
+                            <div className="text-xs text-gold">{secToMS(match.durationSeconds)}</div>
                             <div className="text-xs text-muted-foreground">{formatTimestamp(match.endDateTime)}</div>
                           </div>
                         </div>
@@ -188,7 +187,7 @@ export default function Matches({ playerId }: MatchesProps) {
                             :
                             <Tooltip
                               key={index}
-                              trigger={<img src={`https://cdn.stratz.com/images/dota2/abilities/${abilityFound.name}.png`} className="w-8 h-8 min-w-8 min-h-8 rounded-sm ring-1 ring-neon-purple/40 hover:ring-neon-cyan transition" alt="" />}
+                              trigger={<img src={`https://cdn.stratz.com/images/dota2/abilities/${abilityFound.name}.png`} className="w-8 h-8 min-w-8 min-h-8 rounded-sm ring-1 ring-gold/30 hover:ring-gold transition" alt="" />}
                               content={<p>{abilityFound.language.displayName}</p>}
                             />
                         })}
@@ -201,9 +200,9 @@ export default function Matches({ playerId }: MatchesProps) {
         }
       </div>
       <div ref={elementRef} className="flex flex-col items-center justify-center gap-5 mb-10">
-        {isPrivate && <span className="font-mono text-sm text-muted-foreground uppercase tracking-wider">// profile.private</span>}
-        {isNothingMore && <span className="font-mono text-sm text-muted-foreground uppercase tracking-wider">// end.of.log</span>}
-        {((!dataMatches) && !loading) && <span className="font-mono text-sm text-muted-foreground uppercase tracking-wider">// no.match.data</span>}
+        {isPrivate && <span className="font-display text-sm text-muted-foreground uppercase tracking-[0.2em]">Profile is private</span>}
+        {isNothingMore && <span className="font-display text-sm text-muted-foreground uppercase tracking-[0.2em]">End of history</span>}
+        {((!dataMatches) && !loading) && <span className="font-display text-sm text-muted-foreground uppercase tracking-[0.2em]">No matches found</span>}
         {(loading) && <Spinner />}
         {(dataMatches && !isPrivate && !isNothingMore) && <Button onClick={() => loadMore()}>Load more</Button>}
       </div>
