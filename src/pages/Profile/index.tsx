@@ -88,9 +88,13 @@ export function Profile() {
                 </div>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="font-display text-[10px] uppercase tracking-[0.3em] gold-text">
+                <a
+                  href={data.steamAccount.profileUri}
+                  target="_blank"
+                  className="font-display text-[10px] uppercase tracking-[0.3em] gold-text hover:brightness-110 transition cursor-pointer"
+                >
                   Steam Account
-                </span>
+                </a>
                 <a
                   href={data.steamAccount.profileUri}
                   target="_blank"

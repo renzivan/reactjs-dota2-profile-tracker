@@ -100,7 +100,7 @@ export default function Matches({ playerId }: MatchesProps) {
         <span className="font-display text-xs uppercase tracking-[0.3em] gold-text">// Match History</span>
         <div className="flex-1 h-px bg-gradient-to-r from-gold/50 to-transparent" />
       </div>
-      <div className="flex flex-col container items-center w-full overflow-x-auto mb-5 gap-2">
+      <div className="flex flex-col container items-stretch w-full overflow-x-auto mb-5 gap-2">
         {
           dataMatches?.map((match: MatchType) => {
               const lobby = lobbies?.find((it) => it.id === match.lobbyType)
@@ -112,7 +112,7 @@ export default function Matches({ playerId }: MatchesProps) {
               return (
                 <Accordion
                   key={match.id}
-                  className={`w-full panel relative overflow-hidden ${win ? 'stripe-radiant' : 'stripe-dire'}`}
+                  className={`min-w-max panel relative ${win ? 'stripe-radiant' : 'stripe-dire'}`}
                   type="single"
                   collapsible
                 >
@@ -187,7 +187,19 @@ export default function Matches({ playerId }: MatchesProps) {
                             :
                             <Tooltip
                               key={index}
-                              trigger={<img src={`https://cdn.stratz.com/images/dota2/abilities/${abilityFound.name}.png`} className="w-8 h-8 min-w-8 min-h-8 rounded-sm ring-1 ring-gold/30 hover:ring-gold transition" alt="" />}
+                              trigger={
+                                <img
+                                  src={`https://cdn.stratz.com/images/dota2/abilities/${abilityFound.name}.png`}
+                                  onError={(e) => {
+                                    const img = e.currentTarget
+                                    if (img.dataset.fallback) return
+                                    img.dataset.fallback = "1"
+                                    img.src = `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/${abilityFound.name}.png`
+                                  }}
+                                  className="w-8 h-8 min-w-8 min-h-8 rounded-sm ring-1 ring-gold/30 hover:ring-gold transition"
+                                  alt=""
+                                />
+                              }
                               content={<p>{abilityFound.language.displayName}</p>}
                             />
                         })}
