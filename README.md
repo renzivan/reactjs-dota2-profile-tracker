@@ -29,9 +29,14 @@ export default {
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
 
-## Deploying App to Netlify
-- `$ npm install netlify-cli -g`
-- `$ netlify login`
-- `$ npm run build`
-- `$ netlify deploy`
-- `$ netlify deploy --prod`
+## Deploying
+
+The site is static and lives on a personal server behind a shared Caddy edge proxy at https://dotactics.renzivan.com.
+Caddy serves `~/sites/dotactics` on the server straight off disk, with unknown paths falling back to `index.html` for React Router.
+
+```sh
+./scripts/deploy.sh
+```
+
+The script builds with the local `.env` (Vite bakes `VITE_API_TOKEN` into the bundle) and rsyncs `dist/` to the server over the `renz` SSH alias.
+Caddy picks the new files up immediately, so nothing on the server needs restarting.
