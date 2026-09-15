@@ -14,6 +14,7 @@ type WinrateTimelineProps = {
 export default function WinrateTimeline({ buckets, granularity }: WinrateTimelineProps) {
   const max = Math.max(1, ...buckets.map((b) => b.matches))
   const total = buckets.reduce((n, b) => n + b.matches, 0)
+  const wins = buckets.reduce((n, b) => n + b.wins, 0)
   const first = buckets[0]
   const last = buckets[buckets.length - 1]
 
@@ -27,7 +28,11 @@ export default function WinrateTimeline({ buckets, granularity }: WinrateTimelin
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex h-36 items-end gap-px sm:gap-0.5" role="img" aria-label={`Games per ${granularity} with wins and losses`}>
+      <div
+        className="flex h-36 items-end gap-px sm:gap-0.5"
+        role="img"
+        aria-label={`${buckets.length} ${granularity === "day" ? "days" : "weeks"}, ${total} games, ${wins} wins, ${total - wins} losses`}
+      >
         {buckets.map((b) => {
           const losses = b.matches - b.wins
           const height = (b.matches / max) * 100
@@ -59,6 +64,17 @@ export default function WinrateTimeline({ buckets, granularity }: WinrateTimelin
           )
         })}
       </div>
+      <table className="sr-only">
+        <caption>Games per {granularity}</caption>
+        <thead>
+          <tr><th scope="col">{granularity === "day" ? "Day" : "Week"}</th><th scope="col">Wins</th><th scope="col">Losses</th></tr>
+        </thead>
+        <tbody>
+          {buckets.filter((b) => b.matches > 0).map((b) => (
+            <tr key={b.start.getTime()}><th scope="row">{b.label}</th><td>{b.wins}</td><td>{b.matches - b.wins}</td></tr>
+          ))}
+        </tbody>
+      </table>
       <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
         <span>{first?.label}</span>
         <span>
