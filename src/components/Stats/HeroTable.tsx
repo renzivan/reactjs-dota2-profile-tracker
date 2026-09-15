@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronDown, ChevronUp, CircleHelp } from "lucide-react"
 import { useCallback, useMemo, useState } from "react"
 import {
   MIN_SAMPLE,
@@ -13,7 +13,7 @@ import { tierClasses } from "../../lib/stats/tiers"
 import type { HeroType } from "../../lib/types"
 import { cn } from "../../lib/utils"
 import { Badge } from "../ui/badge"
-import { Tooltip } from "../ui/tooltip"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 type HeroTableProps = {
   rows: HeroStat[]
@@ -25,7 +25,7 @@ type Column = {
   label: string
   align: "left" | "right"
   defaultDir: SortDir
-  /** Shown in a tooltip on the header for metrics that need explaining. */
+  /** Shown behind a question-mark button on the header for metrics that need explaining. */
   hint?: string
 }
 
@@ -48,7 +48,28 @@ const alignClass = (align: "left" | "right") => (align === "right" ? "text-right
 /** Cells are rendered in COLUMNS order, so a cell's alignment comes from its column. */
 const alignOf = (index: number) => alignClass(COLUMNS[index].align)
 
-/** The sortable header control; wrapped in a Tooltip when the column has a hint. */
+/** A small question-mark button that opens the column's explanation on click. */
+const HeaderHint = ({ label, hint }: { label: string; hint: string }) => (
+  <Popover>
+    <PopoverTrigger asChild>
+      <button
+        type="button"
+        aria-label={`What does ${label} mean?`}
+        className={cn(
+          "inline-flex h-4 w-4 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-gold",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+        )}
+      >
+        <CircleHelp className="h-3.5 w-3.5" />
+      </button>
+    </PopoverTrigger>
+    <PopoverContent align="end" className="w-64 p-3 text-xs normal-case tracking-normal text-foreground">
+      {hint}
+    </PopoverContent>
+  </Popover>
+)
+
+/** The sortable header control. */
 const headerButton = (col: Column, active: boolean, sortDir: SortDir, onSort: (key: HeroSortKey) => void) => (
   <button
     type="button"
@@ -109,14 +130,10 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
                   aria-sort={active ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
                   className={cn("px-3 py-2", alignClass(col.align))}
                 >
-                  {col.hint ? (
-                    <Tooltip
-                      trigger={headerButton(col, active, sortDir, onSort)}
-                      content={<p className="max-w-64 normal-case tracking-normal">{col.hint}</p>}
-                    />
-                  ) : (
-                    headerButton(col, active, sortDir, onSort)
-                  )}
+                  <span className={cn("inline-flex items-center gap-1.5", col.align === "right" && "justify-end")}>
+                    {headerButton(col, active, sortDir, onSort)}
+                    {col.hint && <HeaderHint label={col.label} hint={col.hint} />}
+                  </span>
                 </th>
               )
             })}
