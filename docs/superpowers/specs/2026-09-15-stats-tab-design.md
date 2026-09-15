@@ -239,10 +239,11 @@ New pure modules, each unit tested:
 - `src/lib/stats/range.ts`: parse and serialise the URL window, clamp, compute unix bounds, and pick the timeline granularity.
 - `src/lib/stats/aggregate.ts`: merge pages, winrate, colour tier, duration and hour bucketing, weekly and daily bucketing, best and worst hero selection, weighted averages.
 - `src/lib/stats/types.ts`: row and result types.
+- `src/lib/stats/tiers.ts`: the winrate colour rule as class names, shared by every component that shows a winrate.
 
 Data:
 
-- `src/services/stats.service.ts`: the GraphQL document, `fetchStatsPage`, and `usePlayerStats(playerId, window)` which runs the page loop and returns `{ status, data, pagesLoaded, matchesCovered, capped, retry }`.
+- `src/services/stats.service.ts`: the GraphQL document, `fetchStatsPage`, and `usePlayerStats(playerId, window)` which runs the page loop and returns `{ status, data, pagesLoaded, matchesCovered, retry }`, with `capped` carried inside `data`.
 
 UI in `src/components/Stats/`:
 
