@@ -24,14 +24,20 @@ export const client = new ApolloClient({
       // instead of replacing lets the stats pages, the profile and the match
       // history coexist under ROOT_QUERY.player without evicting each other.
       PlayerType: { keyFields: false, merge: true },
+      // Same story for the constants root: heroes, items, abilities and lobbies
+      // are separate queries writing different fields under ROOT_QUERY.constants.
+      ConstantQuery: { keyFields: false, merge: true },
     },
   }),
+  // Cache-first everywhere: a profile, its match history and its stats are
+  // fetched once per session and served from the cache on every later visit.
+  // Reload the page to pull fresh data.
   defaultOptions: {
     watchQuery: {
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'cache-first',
     },
     query: {
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'cache-first',
     },
   }
 });
