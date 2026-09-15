@@ -13,25 +13,56 @@ import { tierClasses } from "../../lib/stats/tiers"
 import type { HeroType } from "../../lib/types"
 import { cn } from "../../lib/utils"
 import { Badge } from "../ui/badge"
+import { Tooltip } from "../ui/tooltip"
 
 type HeroTableProps = {
   rows: HeroStat[]
   heroes: HeroType[]
 }
 
-const COLUMNS: { key: HeroSortKey; label: string; align: "left" | "right"; defaultDir: SortDir }[] = [
+type Column = {
+  key: HeroSortKey
+  label: string
+  align: "left" | "right"
+  defaultDir: SortDir
+  /** Shown in a tooltip on the header for metrics that need explaining. */
+  hint?: string
+}
+
+const COLUMNS: Column[] = [
   { key: "name", label: "Hero", align: "left", defaultDir: "asc" },
   { key: "matches", label: "Games", align: "right", defaultDir: "desc" },
   { key: "wins", label: "Wins", align: "right", defaultDir: "desc" },
   { key: "winrate", label: "Win %", align: "right", defaultDir: "desc" },
-  { key: "kda", label: "KDA", align: "right", defaultDir: "desc" },
-  { key: "imp", label: "IMP", align: "right", defaultDir: "desc" },
+  {
+    key: "kda",
+    label: "KDA",
+    align: "right",
+    defaultDir: "desc",
+    hint: "(Kills + Assists) ÷ Deaths, averaged over these games. Around 2 is typical in ranked, 3 or more is strong, under 1.5 means you are dying too much.",
+  },
 ]
 
 const alignClass = (align: "left" | "right") => (align === "right" ? "text-right" : "text-left")
 
 /** Cells are rendered in COLUMNS order, so a cell's alignment comes from its column. */
 const alignOf = (index: number) => alignClass(COLUMNS[index].align)
+
+/** The sortable header control; wrapped in a Tooltip when the column has a hint. */
+const headerButton = (col: Column, active: boolean, sortDir: SortDir, onSort: (key: HeroSortKey) => void) => (
+  <button
+    type="button"
+    onClick={() => onSort(col.key)}
+    className={cn(
+      "inline-flex items-center gap-1 font-display text-[10px] uppercase tracking-[0.25em] transition-colors hover:text-gold",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+      active ? "text-gold" : "text-muted-foreground",
+    )}
+  >
+    {col.label}
+    {active && (sortDir === "asc" ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
+  </button>
+)
 
 export default function HeroTable({ rows, heroes }: HeroTableProps) {
   const [sortKey, setSortKey] = useState<HeroSortKey>("matches")
@@ -78,19 +109,14 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
                   aria-sort={active ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
                   className={cn("px-3 py-2", alignClass(col.align))}
                 >
-                  <button
-                    type="button"
-                    onClick={() => onSort(col.key)}
-                    className={cn(
-                      "inline-flex items-center gap-1 font-display text-[10px] uppercase tracking-[0.25em] transition-colors hover:text-gold",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
-                      active ? "text-gold" : "text-muted-foreground",
-                    )}
-                  >
-                    {col.label}
-                    {active &&
-                      (sortDir === "asc" ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                  </button>
+                  {col.hint ? (
+                    <Tooltip
+                      trigger={headerButton(col, active, sortDir, onSort)}
+                      content={<p className="max-w-64 normal-case tracking-normal">{col.hint}</p>}
+                    />
+                  ) : (
+                    headerButton(col, active, sortDir, onSort)
+                  )}
                 </th>
               )
             })}
@@ -100,7 +126,6 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
           {sorted.map((row) => {
             const hero = heroById.get(row.heroId)
             const shown = Math.round(row.winrate)
-            const imp = Math.round(row.imp)
             const tier = tierClasses(winrateTier(shown))
             const lowSample = row.matches < MIN_SAMPLE
             return (
@@ -134,9 +159,6 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
                 <td className={cn("px-3 py-2 font-mono text-radiant", alignOf(2))}>{row.wins}</td>
                 <td className={cn("px-3 py-2 font-mono", alignOf(3), tier.text)}>{shown}%</td>
                 <td className={cn("px-3 py-2 font-mono text-mana", alignOf(4))}>{row.kda.toFixed(2)}</td>
-                <td className={cn("px-3 py-2 font-mono", alignOf(5), imp >= 0 ? "text-radiant" : "text-dire")}>
-                  {imp > 0 ? `+${imp}` : imp}
-                </td>
               </tr>
             )
           })}
