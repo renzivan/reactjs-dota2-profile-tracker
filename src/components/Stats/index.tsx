@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
+import { useToday } from "../../hooks/useToday"
 import {
   durationRows,
   heroStats,
@@ -37,13 +38,7 @@ export default function Stats() {
   const [searchParams, setSearchParams] = useSearchParams()
   const heroes = useHeroesCatalog()
 
-  // `now` is fixed per URL change so the window (and cache key) is stable
-  // across re-renders within a visit. `paramsKey` is the intended trigger.
-  const paramsKey = searchParams.toString()
-  const now = useMemo(() => {
-    void paramsKey
-    return new Date()
-  }, [paramsKey])
+  const now = useToday()
   const window = useMemo(() => parseWindow(searchParams, now), [searchParams, now])
 
   const { status, data, pagesLoaded, matchesCovered, retry } = usePlayerStats(Number(playerId) || 0, window)
