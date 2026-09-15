@@ -83,7 +83,7 @@ Merging sums `matchCount` and `winCount` per key.
 Averages (`avgKDA`, `avgImp`) merge as a weighted mean by `matchCount`.
 
 The 15-page cap bounds a filter change to 15 requests, or 1,500 matches.
-If the cap is hit, the summary strip shows "Based on your most recent 1,500 ranked matches in this window" so the numbers are never silently partial.
+If the cap is hit, the summary strip shows "Based on the 1,500 most recent ranked matches in this window" so the numbers are never silently partial.
 
 Each page is an Apollo `client.query` with `fetchPolicy: 'cache-first'`, so switching back to a range already loaded is instant.
 The global default of `network-only` stays for everything else.
