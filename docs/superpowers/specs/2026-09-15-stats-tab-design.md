@@ -285,3 +285,6 @@ Lint stays at zero warnings and the build passes before merge.
 - Stratz `hour` is UTC.
   Verified once during implementation as described above.
 - Hero icons for the table use the same URL pattern and fallback as the match history hero component.
+- Stratz `DATE_DAY` is UTC-based, so the timeline attributes a late-night local game to its UTC date while the hour chart shows it in local time.
+  The two panels can therefore disagree about which day a game near midnight belongs to.
+  This is accepted because per-match data is a non-goal.

@@ -12,7 +12,7 @@ export default function StatPanel({ title, children, className }: StatPanelProps
   return (
     <section className={cn("flex flex-col", className)}>
       <div className="mb-3 flex items-center gap-3">
-        <span className="font-display text-xs uppercase tracking-[0.3em] gold-text">// {title}</span>
+        <h2 className="font-display text-xs uppercase tracking-[0.3em] gold-text">// {title}</h2>
         <div className="h-px flex-1 bg-gradient-to-r from-gold/50 to-transparent" />
       </div>
       <div className="panel flex-1 p-4 md:p-5">{children}</div>

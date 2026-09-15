@@ -28,6 +28,11 @@ const COLUMNS: { key: HeroSortKey; label: string; align: "left" | "right"; defau
   { key: "imp", label: "IMP", align: "right", defaultDir: "desc" },
 ]
 
+const alignClass = (align: "left" | "right") => (align === "right" ? "text-right" : "text-left")
+
+/** Cells are rendered in COLUMNS order, so a cell's alignment comes from its column. */
+const alignOf = (index: number) => alignClass(COLUMNS[index].align)
+
 export default function HeroTable({ rows, heroes }: HeroTableProps) {
   const [sortKey, setSortKey] = useState<HeroSortKey>("matches")
   const [sortDir, setSortDir] = useState<SortDir>("desc")
@@ -61,6 +66,7 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[36rem] border-collapse text-sm">
+        <caption className="sr-only">Hero performance</caption>
         <thead>
           <tr className="border-b border-gold/25">
             {COLUMNS.map((col) => {
@@ -70,7 +76,7 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
                   key={col.key}
                   scope="col"
                   aria-sort={active ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
-                  className={cn("px-3 py-2", col.align === "right" ? "text-right" : "text-left")}
+                  className={cn("px-3 py-2", alignClass(col.align))}
                 >
                   <button
                     type="button"
@@ -102,7 +108,7 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
                 key={row.heroId}
                 className={cn("border-b border-border/60 transition-colors hover:bg-gold/5", lowSample && "opacity-50")}
               >
-                <td className="px-3 py-2">
+                <td className={cn("px-3 py-2", alignOf(0))}>
                   <div className="flex items-center gap-3">
                     {hero ? (
                       <img
@@ -114,21 +120,21 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
                           img.src = `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${hero.shortName}.png`
                         }}
                         alt=""
-                        className="h-7 w-12 rounded-sm object-cover ring-1 ring-gold/25"
+                        className="h-7 w-12 shrink-0 rounded-sm object-cover ring-1 ring-gold/25"
                       />
                     ) : (
-                      <div aria-hidden className="h-7 w-12 rounded-sm bg-secondary ring-1 ring-gold/25" />
+                      <div aria-hidden className="h-7 w-12 shrink-0 rounded-sm bg-secondary ring-1 ring-gold/25" />
                     )}
                     <span className="font-display text-xs uppercase tracking-[0.12em]">{nameOf(row.heroId)}</span>
                     {picks.best === row.heroId && <Badge>Best</Badge>}
                     {picks.worst === row.heroId && <Badge variant="destructive">Worst</Badge>}
                   </div>
                 </td>
-                <td className="px-3 py-2 text-right font-mono">{row.matches}</td>
-                <td className="px-3 py-2 text-right font-mono text-radiant">{row.wins}</td>
-                <td className={cn("px-3 py-2 text-right font-mono", tier.text)}>{shown}%</td>
-                <td className="px-3 py-2 text-right font-mono text-mana">{row.kda.toFixed(2)}</td>
-                <td className={cn("px-3 py-2 text-right font-mono", imp >= 0 ? "text-radiant" : "text-dire")}>
+                <td className={cn("px-3 py-2 font-mono", alignOf(1))}>{row.matches}</td>
+                <td className={cn("px-3 py-2 font-mono text-radiant", alignOf(2))}>{row.wins}</td>
+                <td className={cn("px-3 py-2 font-mono", alignOf(3), tier.text)}>{shown}%</td>
+                <td className={cn("px-3 py-2 font-mono text-mana", alignOf(4))}>{row.kda.toFixed(2)}</td>
+                <td className={cn("px-3 py-2 font-mono", alignOf(5), imp >= 0 ? "text-radiant" : "text-dire")}>
                   {imp > 0 ? `+${imp}` : imp}
                 </td>
               </tr>

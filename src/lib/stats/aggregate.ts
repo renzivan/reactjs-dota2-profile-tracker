@@ -73,6 +73,16 @@ export function mergePages(pages: StatsPage[]): StatsPage {
   }
 }
 
+/** Matches a page covered: the faction rows partition every match by side. */
+export function matchesInPage(page: StatsPage): number {
+  return page.faction.reduce((n, r) => n + r.matchCount, 0)
+}
+
+/** Stop when a page covers fewer than pageSize matches or the page cap is reached. */
+export function shouldStopPaging(covered: number, pageIndex: number, pageSize: number, maxPages: number): boolean {
+  return covered < pageSize || pageIndex >= maxPages - 1
+}
+
 export type Summary = { games: number; wins: number; losses: number; winrate: number; avgKDA: number }
 
 export function summarize(faction: FactionRow[]): Summary {
@@ -188,6 +198,7 @@ export function hourRows(rows: HourRow[], offsetHours: number): BarRow[] {
   for (const r of rows) {
     const local = (((r.hour + offsetHours) % 24) + 24) % 24
     const block = blocks[Math.floor(local / 4)]
+    if (!block) continue
     block.matches += r.matchCount
     block.wins += r.winCount
   }

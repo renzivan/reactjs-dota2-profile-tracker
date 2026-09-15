@@ -7,10 +7,12 @@ import {
   heroStats,
   hourRows,
   laneRows,
+  matchesInPage,
   mergePages,
   partyRows,
   pickBestWorst,
   positionRows,
+  shouldStopPaging,
   sideRows,
   sortHeroes,
   summarize,
@@ -316,5 +318,37 @@ describe('pickBestWorst', () => {
 
   it('returns nothing when best and worst would be the same hero', () => {
     expect(pickBestWorst([stat(1, 10, 5), stat(2, 10, 5)])).toEqual({})
+  })
+})
+
+describe('matchesInPage', () => {
+  it('sums the faction rows', () => {
+    const page = {
+      ...emptyPage(),
+      faction: [
+        { isRadiant: true, matchCount: 60, winCount: 30, avgKDA: 3 },
+        { isRadiant: false, matchCount: 40, winCount: 20, avgKDA: 2 },
+      ],
+    }
+    expect(matchesInPage(page)).toBe(100)
+  })
+
+  it('is 0 for an empty page', () => {
+    expect(matchesInPage(emptyPage())).toBe(0)
+  })
+})
+
+describe('shouldStopPaging', () => {
+  it('keeps going on a full page before the cap', () => {
+    expect(shouldStopPaging(100, 0, 100, 15)).toBe(false)
+    expect(shouldStopPaging(100, 13, 100, 15)).toBe(false)
+  })
+
+  it('stops on a page under the page size', () => {
+    expect(shouldStopPaging(99, 0, 100, 15)).toBe(true)
+  })
+
+  it('stops on the last allowed page', () => {
+    expect(shouldStopPaging(100, 14, 100, 15)).toBe(true)
   })
 })

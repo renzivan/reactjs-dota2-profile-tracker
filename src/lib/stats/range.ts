@@ -17,7 +17,11 @@ export const PRESETS: Record<Preset, { label: string; days: number }> = {
   '1y': { label: '1Y', days: 365 },
 }
 
-export const PRESET_ORDER: Preset[] = ['30d', '90d', '180d', '1y']
+/**
+ * Derived from PRESETS so the two cannot drift. Object key order is insertion
+ * order, so the segments keep their 30D, 3M, 6M, 1Y order.
+ */
+export const PRESET_ORDER = Object.keys(PRESETS) as Preset[]
 export const DEFAULT_PRESET: Preset = '30d'
 
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/

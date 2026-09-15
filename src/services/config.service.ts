@@ -18,7 +18,14 @@ const authLink = setContext((_, { headers }) => {
 
 export const client = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      // No query selects an id on PlayerType, so it is never normalised. Merging
+      // instead of replacing lets the stats pages, the profile and the match
+      // history coexist under ROOT_QUERY.player without evicting each other.
+      PlayerType: { keyFields: false, merge: true },
+    },
+  }),
   defaultOptions: {
     watchQuery: {
       fetchPolicy: 'network-only',

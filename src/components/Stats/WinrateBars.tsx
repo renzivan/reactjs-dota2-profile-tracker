@@ -49,6 +49,7 @@ export default function WinrateBars({ rows, emptyLabel = "No games" }: WinrateBa
               {row.matches === 0 ? "—" : `${shown}%`}
             </span>
             <span className="text-right font-mono text-xs text-muted-foreground">n {row.matches}</span>
+            {lowSample && <span className="sr-only">Fewer than {MIN_SAMPLE} games</span>}
           </div>
         )
         return (

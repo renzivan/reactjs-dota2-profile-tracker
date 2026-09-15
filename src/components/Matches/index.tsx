@@ -6,12 +6,11 @@ import { formatTimestamp, getRankName, secToMS } from "../../lib/utils"
 import { useGetAbilities } from "../../services/abilities.service"
 import { useGetMatches } from "../../services/player.service"
 // import { useGetGameModes } from "../../services/gameModes.service"
-import { useGetHeroes } from "../../services/heroes.service"
+import { useHeroesCatalog } from "../../services/heroes.service"
 import { useGetLobbies } from "../../services/lobbies.service"
 
 import { setAbilities } from "../../store/reducer/abilities"
 // import { setGameModes } from "../../store/reducer/gameModes"
-import { setHeroes } from "../../store/reducer/heroes"
 import { setLobbies } from "../../store/reducer/lobbies"
 
 import RankTier from "../RankTier"
@@ -40,12 +39,11 @@ export default function Matches({ playerId }: MatchesProps) {
   const elementRef = useRef(null)
   const abilities = useSelector((state: RootState) => state.abilities.value)
   // const gameModes = useSelector((state: RootState) => state.gameModes.value)
-  const heroes = useSelector((state: RootState) => state.heroes.value)
+  const heroes = useHeroesCatalog()
   const lobbies = useSelector((state: RootState) => state.lobbies.value)
 
   const dispatch = useDispatch()
   const { data: dataAbilities } = useGetAbilities()
-  const { data: dataHeroes } = useGetHeroes()
   const { data: dataLobbies } = useGetLobbies()
   // const { data: dataGameModes } = useGetGameModes()
 
@@ -87,18 +85,15 @@ export default function Matches({ playerId }: MatchesProps) {
     // if (dataGameModes && gameModes.length === 0) {
     //   dispatch(setGameModes(Object.values(dataGameModes)))
     // }
-    if (dataHeroes && heroes.length === 0) {
-      dispatch(setHeroes(Object.values(dataHeroes)))
-    }
     if (dataLobbies && lobbies.length === 0) {
       dispatch(setLobbies(Object.values(dataLobbies)))
     }
-  }, [playerId, dataHeroes, dispatch, heroes, dataLobbies, lobbies, dataAbilities, abilities])
+  }, [playerId, dispatch, dataLobbies, lobbies, dataAbilities, abilities])
 
   return (
     <div className="flex flex-col items-center">
       <div className="container mb-3 flex items-center gap-3">
-        <span className="font-display text-xs uppercase tracking-[0.3em] gold-text">// Match History</span>
+        <h2 className="font-display text-xs uppercase tracking-[0.3em] gold-text">// Match History</h2>
         <div className="flex-1 h-px bg-gradient-to-r from-gold/50 to-transparent" />
       </div>
       <div className="flex flex-col container items-stretch w-full overflow-x-auto mb-5 gap-2">

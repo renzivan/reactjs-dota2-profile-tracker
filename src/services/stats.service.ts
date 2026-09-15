@@ -1,6 +1,6 @@
 import { gql, useApolloClient } from '@apollo/client'
 import { useCallback, useEffect, useState } from 'react'
-import { mergePages, summarize } from '../lib/stats/aggregate'
+import { matchesInPage, mergePages, shouldStopPaging, summarize } from '../lib/stats/aggregate'
 import type { StatsData, StatsPage, StatsWindow } from '../lib/stats/types'
 
 export const RANKED_LOBBY_TYPE = 7
@@ -61,8 +61,6 @@ function normalisePage(raw: RawPage): StatsPage {
   }
 }
 
-const matchesIn = (page: StatsPage) => page.faction.reduce((n, r) => n + r.matchCount, 0)
-
 export type StatsStatus = 'loading' | 'ready' | 'empty' | 'error'
 
 type State = {
@@ -113,11 +111,14 @@ export function usePlayerStats(playerId: number, window: StatsWindow) {
 
         const page = normalisePage(result.data?.player ?? null)
         pages.push(page)
-        covered += matchesIn(page)
+        const pageCovered = matchesInPage(page)
+        covered += pageCovered
         setState((s) => ({ ...s, pagesLoaded: pages.length, matchesCovered: covered }))
 
-        if (matchesIn(page) < PAGE_SIZE) break
-        if (i === MAX_PAGES - 1) capped = true
+        if (shouldStopPaging(pageCovered, i, PAGE_SIZE, MAX_PAGES)) {
+          capped = pageCovered >= PAGE_SIZE && i === MAX_PAGES - 1
+          break
+        }
       }
 
       const merged = mergePages(pages)
@@ -130,9 +131,10 @@ export function usePlayerStats(playerId: number, window: StatsWindow) {
       })
     }
 
-    run().catch(() => {
+    run().catch((err: unknown) => {
       // Covers GraphQL errors, the plain-text 403 the token-IP guard returns,
       // and empty bodies from rate limiting. All are retryable.
+      console.error('stats page fetch failed', err)
       if (!cancelled) setState((s) => ({ ...s, status: 'error' }))
     })
 

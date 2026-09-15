@@ -42,7 +42,7 @@ export default function RangeFilter({ window, now, onPreset, onCustom }: RangeFi
 
   return (
     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <div className="flex flex-wrap items-center gap-1 rounded-sm border border-border bg-card/60 p-1">
+      <div role="group" aria-label="Date range" className="flex flex-wrap items-center gap-1 rounded-sm border border-border bg-card/60 p-1">
         {PRESET_ORDER.map((preset) => {
           const active = window.kind === "preset" && window.preset === preset
           return (
@@ -65,7 +65,6 @@ export default function RangeFilter({ window, now, onPreset, onCustom }: RangeFi
               type="button"
               variant="ghost"
               size="sm"
-              aria-pressed={window.kind === "custom"}
               className={cn(segment, "gap-2", window.kind === "custom" ? activeSegment : idleSegment)}
             >
               <CalendarDays className="h-3.5 w-3.5" />
@@ -74,6 +73,7 @@ export default function RangeFilter({ window, now, onPreset, onCustom }: RangeFi
           </PopoverTrigger>
           {/* Bounded to the space Radix measured, so two stacked months stay reachable on a short viewport. */}
           <PopoverContent
+            aria-label="Custom date range"
             collisionPadding={8}
             className="max-h-[var(--radix-popover-content-available-height)] w-auto overflow-y-auto"
           >
