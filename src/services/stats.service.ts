@@ -11,33 +11,34 @@ export const MAX_PAGES = 15
 
 // Every alias shares the same request except `groupBy`. `playerList: SINGLE`
 // is required. The union members carry matchCount and winCount each.
-// The literal 7 (RANKED) and 100 (PAGE_SIZE) are written out because gql
-// tagged templates only accept fragments or strings as interpolations.
+// `take` and `lobbyTypeIds` come through GraphQL variables so PAGE_SIZE and
+// RANKED_LOBBY_TYPE are the single source of truth for both the request the
+// server applies and the skip arithmetic and stop rule below.
 const GET_PLAYER_STATS_PAGE = gql`
-  query GetPlayerStatsPage($playerId: Long!, $start: Long!, $end: Long!, $skip: Int!) {
+  query GetPlayerStatsPage($playerId: Long!, $start: Long!, $end: Long!, $skip: Int!, $take: Int!, $lobbyTypeIds: [Byte!]!) {
     player(steamAccountId: $playerId) {
-      faction: matchesGroupBy(request: { playerList: SINGLE, groupBy: FACTION, lobbyTypeIds: [7], startDateTime: $start, endDateTime: $end, take: 100, skip: $skip }) {
+      faction: matchesGroupBy(request: { playerList: SINGLE, groupBy: FACTION, lobbyTypeIds: $lobbyTypeIds, startDateTime: $start, endDateTime: $end, take: $take, skip: $skip }) {
         ... on MatchGroupByFactionType { isRadiant matchCount winCount avgKDA }
       }
-      lane: matchesGroupBy(request: { playerList: SINGLE, groupBy: LANE, lobbyTypeIds: [7], startDateTime: $start, endDateTime: $end, take: 100, skip: $skip }) {
+      lane: matchesGroupBy(request: { playerList: SINGLE, groupBy: LANE, lobbyTypeIds: $lobbyTypeIds, startDateTime: $start, endDateTime: $end, take: $take, skip: $skip }) {
         ... on MatchGroupByLaneType { lane matchCount winCount }
       }
-      position: matchesGroupBy(request: { playerList: SINGLE, groupBy: POSITION, lobbyTypeIds: [7], startDateTime: $start, endDateTime: $end, take: 100, skip: $skip }) {
+      position: matchesGroupBy(request: { playerList: SINGLE, groupBy: POSITION, lobbyTypeIds: $lobbyTypeIds, startDateTime: $start, endDateTime: $end, take: $take, skip: $skip }) {
         ... on MatchGroupByPositionType { position matchCount winCount }
       }
-      hero: matchesGroupBy(request: { playerList: SINGLE, groupBy: HERO, lobbyTypeIds: [7], startDateTime: $start, endDateTime: $end, take: 100, skip: $skip }) {
+      hero: matchesGroupBy(request: { playerList: SINGLE, groupBy: HERO, lobbyTypeIds: $lobbyTypeIds, startDateTime: $start, endDateTime: $end, take: $take, skip: $skip }) {
         ... on MatchGroupByHeroType { heroId matchCount winCount avgKDA avgImp }
       }
-      day: matchesGroupBy(request: { playerList: SINGLE, groupBy: DATE_DAY, lobbyTypeIds: [7], startDateTime: $start, endDateTime: $end, take: 100, skip: $skip }) {
+      day: matchesGroupBy(request: { playerList: SINGLE, groupBy: DATE_DAY, lobbyTypeIds: $lobbyTypeIds, startDateTime: $start, endDateTime: $end, take: $take, skip: $skip }) {
         ... on MatchGroupByDateDayType { dateDay matchCount winCount }
       }
-      party: matchesGroupBy(request: { playerList: SINGLE, groupBy: IS_PARTY, lobbyTypeIds: [7], startDateTime: $start, endDateTime: $end, take: 100, skip: $skip }) {
+      party: matchesGroupBy(request: { playerList: SINGLE, groupBy: IS_PARTY, lobbyTypeIds: $lobbyTypeIds, startDateTime: $start, endDateTime: $end, take: $take, skip: $skip }) {
         ... on MatchGroupByIsPartyType { isParty matchCount winCount }
       }
-      duration: matchesGroupBy(request: { playerList: SINGLE, groupBy: DURATION_MINUTES, lobbyTypeIds: [7], startDateTime: $start, endDateTime: $end, take: 100, skip: $skip }) {
+      duration: matchesGroupBy(request: { playerList: SINGLE, groupBy: DURATION_MINUTES, lobbyTypeIds: $lobbyTypeIds, startDateTime: $start, endDateTime: $end, take: $take, skip: $skip }) {
         ... on MatchGroupByDurationMinutesType { durationMinutes matchCount winCount }
       }
-      hour: matchesGroupBy(request: { playerList: SINGLE, groupBy: HOUR, lobbyTypeIds: [7], startDateTime: $start, endDateTime: $end, take: 100, skip: $skip }) {
+      hour: matchesGroupBy(request: { playerList: SINGLE, groupBy: HOUR, lobbyTypeIds: $lobbyTypeIds, startDateTime: $start, endDateTime: $end, take: $take, skip: $skip }) {
         ... on MatchGroupByHourType { hour matchCount winCount }
       }
     }
@@ -98,7 +99,14 @@ export function usePlayerStats(playerId: number, window: StatsWindow) {
       for (let i = 0; i < MAX_PAGES; i++) {
         const result = await client.query<{ player: RawPage }>({
           query: GET_PLAYER_STATS_PAGE,
-          variables: { playerId, start: window.start, end: window.end, skip: i * PAGE_SIZE },
+          variables: {
+            playerId,
+            start: window.start,
+            end: window.end,
+            skip: i * PAGE_SIZE,
+            take: PAGE_SIZE,
+            lobbyTypeIds: [RANKED_LOBBY_TYPE],
+          },
           fetchPolicy: 'cache-first',
         })
         if (cancelled) return

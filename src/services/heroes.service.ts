@@ -21,20 +21,22 @@ const GET_HEROES = gql`
   }
 `;
 
-export const useGetHeroes = () => {
-  const res = useQuery(GET_HEROES);
+export const useGetHeroes = (skip = false) => {
+  const res = useQuery(GET_HEROES, { skip });
 
   return { ...res, data: res.data?.constants.heroes };
 }
 
 /**
- * Heroes from the Redux store, fetching and populating them once if empty.
+ * Heroes from the Redux store, populating them once if empty. The fetch is
+ * skipped while the store already holds them, so a remount does not
+ * re-download the constants under the client's network-only default.
  * The Matches component does the same inline; this is the reusable form.
  */
 export const useHeroesCatalog = (): HeroType[] => {
   const heroes = useSelector((state: RootState) => state.heroes.value);
   const dispatch = useDispatch();
-  const { data } = useGetHeroes();
+  const { data } = useGetHeroes(heroes.length > 0);
 
   useEffect(() => {
     if (data && heroes.length === 0) {
