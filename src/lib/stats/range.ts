@@ -25,7 +25,7 @@ const toSeconds = (d: Date) => Math.floor(d.getTime() / 1000)
 const toDate = (seconds: number) => new Date(seconds * 1000)
 
 export function isPreset(value: string | null): value is Preset {
-  return value !== null && value in PRESETS
+  return value !== null && PRESET_ORDER.includes(value as Preset)
 }
 
 /** The earliest day a custom window may start: one year before today. */
@@ -49,8 +49,12 @@ export function presetWindow(preset: Preset, now: Date): StatsWindow {
 export function customWindow(from: Date, to: Date, now: Date): StatsWindow {
   const min = earliestAllowed(now)
   const max = startOfDay(now)
-  let a = startOfDay(from < min ? min : from)
-  let b = startOfDay(to > max ? max : to)
+  const clamp = (d: Date) => {
+    const s = startOfDay(d)
+    return s < min ? min : s > max ? max : s
+  }
+  let a = clamp(from)
+  let b = clamp(to)
   if (a > b) [a, b] = [b, a]
   return {
     kind: 'custom',

@@ -31,6 +31,8 @@ describe('parseWindow', () => {
 
   it('falls back to 30 days for an unknown range', () => {
     expect(parseWindow(params('range=7d'), NOW)).toMatchObject({ preset: '30d' })
+    expect(parseWindow(params('range=toString'), NOW)).toMatchObject({ preset: '30d' })
+    expect(parseWindow(params('range=constructor'), NOW)).toMatchObject({ preset: '30d' })
   })
 
   it('reads a custom window inclusive of both days', () => {
@@ -69,6 +71,17 @@ describe('parseWindow', () => {
   it('swaps from and to when reversed', () => {
     const w = parseWindow(params('from=2026-08-10&to=2026-08-01'), NOW)
     expect(w).toMatchObject({ from: '2026-08-01', to: '2026-08-10' })
+  })
+
+  it('collapses a window that is entirely before the allowed range', () => {
+    const w = parseWindow(params('from=2010-01-01&to=2010-06-01'), NOW)
+    expect(w).toMatchObject({ from: '2025-09-15', to: '2025-09-15' })
+  })
+
+  it('collapses a window that is entirely after today', () => {
+    const w = parseWindow(params('from=2027-01-01&to=2030-01-01'), NOW)
+    expect(w).toMatchObject({ from: '2026-09-15', to: '2026-09-15' })
+    expect(w.end).toBe(secs(endOfDay(NOW)))
   })
 })
 
