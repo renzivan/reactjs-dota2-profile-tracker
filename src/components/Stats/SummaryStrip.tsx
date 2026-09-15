@@ -15,13 +15,20 @@ export default function SummaryStrip({ summary, note }: SummaryStripProps) {
     { label: "Games", value: String(summary.games) },
     { label: "Wins", value: String(summary.wins), className: "text-radiant" },
     { label: "Losses", value: String(summary.losses), className: "text-dire" },
-    { label: "Win %", value: summary.games === 0 ? "—" : `${shown}%`, className: tier.text },
+    {
+      label: "Win %",
+      value: summary.games === 0 ? "—" : `${shown}%`,
+      className: summary.games === 0 ? "text-muted-foreground" : tier.text,
+    },
     { label: "Avg KDA", value: summary.games === 0 ? "—" : summary.avgKDA.toFixed(2), className: "text-mana" },
   ]
 
   return (
-    <div className="panel brackets relative overflow-hidden p-5 md:p-6">
-      <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-gold/10 blur-3xl" />
+    <div className="panel brackets relative p-5 md:p-6">
+      {/* Own clipping layer, so the glow stays inside the panel without cutting the corner brackets. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-gold/10 blur-3xl" />
+      </div>
       <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
         {cells.map((cell) => (
           <div key={cell.label} className="flex flex-col items-center gap-1 text-center">

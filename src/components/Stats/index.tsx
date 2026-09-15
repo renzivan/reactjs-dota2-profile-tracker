@@ -71,7 +71,7 @@ export default function Stats() {
           {pagesLoaded > 0 && (
             <div className="flex items-center gap-3 font-display text-xs uppercase tracking-[0.3em] text-muted-foreground">
               <Spinner />
-              Aggregating {matchesCovered} matches…
+              Aggregating {matchesCovered.toLocaleString()} matches…
             </div>
           )}
           <Skeleton className="h-28 w-full" />
@@ -81,6 +81,11 @@ export default function Stats() {
             ))}
           </div>
           <Skeleton className="h-48 w-full" />
+          <div className="grid gap-8 md:grid-cols-2">
+            {Array.from({ length: 2 }, (_, i) => (
+              <Skeleton key={i} className="h-44 w-full" />
+            ))}
+          </div>
           <Skeleton className="h-64 w-full" />
         </>
       )}

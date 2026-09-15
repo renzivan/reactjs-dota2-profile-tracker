@@ -72,7 +72,11 @@ export default function RangeFilter({ window, now, onPreset, onCustom }: RangeFi
               Custom
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto">
+          {/* Bounded to the space Radix measured, so two stacked months stay reachable on a short viewport. */}
+          <PopoverContent
+            collisionPadding={8}
+            className="max-h-[var(--radix-popover-content-available-height)] w-auto overflow-y-auto"
+          >
             <Calendar
               mode="range"
               numberOfMonths={2}

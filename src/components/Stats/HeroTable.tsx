@@ -77,6 +77,7 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
                     onClick={() => onSort(col.key)}
                     className={cn(
                       "inline-flex items-center gap-1 font-display text-[10px] uppercase tracking-[0.25em] transition-colors hover:text-gold",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
                       active ? "text-gold" : "text-muted-foreground",
                     )}
                   >
