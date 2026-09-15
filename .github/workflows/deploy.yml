@@ -1,0 +1,82 @@
+# Build and deploy on every push to main.
+#
+# The site is static files served by the Caddy edge proxy on the personal
+# server, which reads ~/sites/dotactics straight off disk. Deploying is
+# therefore a build followed by an rsync; nothing on the server restarts.
+#
+# The deploy key is restricted server-side with rrsync to that one folder,
+# so this workflow can write the site and nothing else. The remote path is
+# "/" because rrsync maps it onto the allowed folder.
+#
+# Secrets:   DEPLOY_SSH_KEY (private key), VITE_API_TOKEN (Stratz token)
+# Variables: VITE_API_URL, DEPLOY_KNOWN_HOSTS (ssh-keyscan line for the host)
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time, in order; a second push waits for the first to finish
+# rather than racing it on the server.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DEPLOY_HOST: 167.71.200.139
+      DEPLOY_USER: renz
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_API_TOKEN: ${{ secrets.VITE_API_TOKEN }}
+
+      - name: Install deploy key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ vars.DEPLOY_KNOWN_HOSTS }}
+
+      - name: Sync to server
+        run: |
+          rsync --archive --checksum --compress --delete --itemize-changes \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes" \
+            dist/ "$DEPLOY_USER@$DEPLOY_HOST:/"
+
+      - name: Verify
+        run: |
+          # The built index.html references a hashed bundle; the live site must serve that same hash.
+          BUNDLE=$(grep -o '/assets/index-[^"]*\.js' dist/index.html | head -1)
+          for i in 1 2 3 4 5 6; do
+            LIVE=$(curl -fsS https://dotactics.renzivan.com/ | grep -o '/assets/index-[^"]*\.js' | head -1) || true
+            [ "$LIVE" = "$BUNDLE" ] && { echo "live site serves $BUNDLE"; exit 0; }
+            sleep 5
+          done
+          echo "live site still serves $LIVE, expected $BUNDLE" >&2
+          exit 1

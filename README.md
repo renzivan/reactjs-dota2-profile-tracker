@@ -34,9 +34,12 @@ export default {
 The site is static and lives on a personal server behind a shared Caddy edge proxy at https://dotactics.renzivan.com.
 Caddy serves `~/sites/dotactics` on the server straight off disk, with unknown paths falling back to `index.html` for React Router.
 
+Every push to `main` deploys automatically through `.github/workflows/deploy.yml`.
+The workflow lints, tests, builds with the `VITE_API_URL` variable and `VITE_API_TOKEN` secret, rsyncs `dist/` to the server over a deploy key that `rrsync` restricts to the site folder, and then checks that the live site serves the new bundle.
+Caddy picks the new files up immediately, so nothing on the server needs restarting.
+
+To deploy by hand from a machine with the `renz` SSH alias and a local `.env`:
+
 ```sh
 ./scripts/deploy.sh
 ```
-
-The script builds with the local `.env` (Vite bakes `VITE_API_TOKEN` into the bundle) and rsyncs `dist/` to the server over the `renz` SSH alias.
-Caddy picks the new files up immediately, so nothing on the server needs restarting.
