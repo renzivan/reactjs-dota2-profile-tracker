@@ -162,7 +162,7 @@ The same colour rule applies to every winrate on the page.
 One shared component renders Side, Roles, Lanes, Party vs Solo, Game length and Hour of day.
 Input is a list of rows with `label`, optional `icon`, `matches` and `wins`.
 
-Each row shows: icon or label, a horizontal bar filled to the winrate and coloured by the winrate rule, the percentage, and the game count as "n 21".
+Each row shows: icon or label, a horizontal bar filled to the winrate and coloured by the winrate rule, the percentage, and the game count as "21 games".
 Rows sort by games descending, except Game length and Hour of day which keep their natural order.
 Rows with fewer than 5 games render at reduced opacity with a tooltip "Fewer than 5 games".
 They are never hidden, because hiding them would make the totals stop adding up.

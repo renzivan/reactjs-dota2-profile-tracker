@@ -27,7 +27,7 @@ export default function WinrateBars({ rows, emptyLabel = "No games" }: WinrateBa
         const line = (
           <div
             className={cn(
-              "grid grid-cols-[minmax(0,9rem)_minmax(3rem,1fr)_3rem_3.5rem] items-center gap-3",
+              "grid grid-cols-[minmax(0,9rem)_minmax(3rem,1fr)_3rem_5rem] items-center gap-3",
               lowSample && "opacity-50",
             )}
           >
@@ -48,7 +48,9 @@ export default function WinrateBars({ rows, emptyLabel = "No games" }: WinrateBa
             <span className={cn("text-right font-mono text-sm", row.matches === 0 ? "text-muted-foreground" : tier.text)}>
               {row.matches === 0 ? "—" : `${shown}%`}
             </span>
-            <span className="text-right font-mono text-xs text-muted-foreground">n {row.matches}</span>
+            <span className="text-right font-mono text-xs text-muted-foreground">
+              {row.matches} {row.matches === 1 ? "game" : "games"}
+            </span>
             {lowSample && <span className="sr-only">Fewer than {MIN_SAMPLE} games</span>}
           </div>
         )
