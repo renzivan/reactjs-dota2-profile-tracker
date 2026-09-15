@@ -20,13 +20,18 @@ const segment =
 const activeSegment = "!bg-gold/15 !text-gold border-gold"
 const idleSegment = "border-transparent text-muted-foreground hover:!text-gold hover:bg-gold/5"
 
+const seedFromWindow = (w: StatsWindow): DateRange | undefined =>
+  w.kind === "custom" ? { from: new Date(w.start * 1000), to: new Date(w.end * 1000) } : undefined
+
 export default function RangeFilter({ window, now, onPreset, onCustom }: RangeFilterProps) {
   const [open, setOpen] = useState(false)
-  const [draft, setDraft] = useState<DateRange | undefined>(
-    window.kind === "custom"
-      ? { from: new Date(window.start * 1000), to: new Date(window.end * 1000) }
-      : undefined,
-  )
+  const [draft, setDraft] = useState<DateRange | undefined>(() => seedFromWindow(window))
+
+  /** Reseed from the current window on every open, so a stale or abandoned draft never sticks. */
+  const onOpenChange = (next: boolean) => {
+    if (next) setDraft(seedFromWindow(window))
+    setOpen(next)
+  }
 
   const apply = () => {
     if (draft?.from && draft.to) {
@@ -54,7 +59,7 @@ export default function RangeFilter({ window, now, onPreset, onCustom }: RangeFi
             </Button>
           )
         })}
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={onOpenChange}>
           <PopoverTrigger asChild>
             <Button
               type="button"
