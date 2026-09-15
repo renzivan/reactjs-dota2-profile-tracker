@@ -7,14 +7,16 @@ interface TooltipProps {
   content: React.ReactNode
   sideOffset?: number
   className?: string
+  /** Classes for the span that wraps the trigger. */
+  triggerClassName?: string
 }
 
 const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
-  ({ trigger, content, sideOffset = 4, className, ...props }, ref) => (
+  ({ trigger, content, sideOffset = 4, className, triggerClassName, ...props }, ref) => (
     <TooltipPrimitive.Provider>
       <TooltipPrimitive.Root>
         <TooltipPrimitive.Trigger asChild>
-          <span>{trigger}</span>
+          <span className={triggerClassName}>{trigger}</span>
         </TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
           <TooltipPrimitive.Content
