@@ -93,6 +93,7 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
           {sorted.map((row) => {
             const hero = heroById.get(row.heroId)
             const shown = Math.round(row.winrate)
+            const imp = Math.round(row.imp)
             const tier = tierClasses(winrateTier(shown))
             const lowSample = row.matches < MIN_SAMPLE
             return (
@@ -102,17 +103,21 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
               >
                 <td className="px-3 py-2">
                   <div className="flex items-center gap-3">
-                    <img
-                      src={`https://cdn.stratz.com/images/dota2/heroes/${hero?.shortName}_horz.png`}
-                      onError={(e) => {
-                        const img = e.currentTarget
-                        if (img.dataset.fallback) return
-                        img.dataset.fallback = "1"
-                        img.src = `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${hero?.shortName}.png`
-                      }}
-                      alt=""
-                      className="h-7 w-12 rounded-sm object-cover ring-1 ring-gold/25"
-                    />
+                    {hero ? (
+                      <img
+                        src={`https://cdn.stratz.com/images/dota2/heroes/${hero.shortName}_horz.png`}
+                        onError={(e) => {
+                          const img = e.currentTarget
+                          if (img.dataset.fallback) return
+                          img.dataset.fallback = "1"
+                          img.src = `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${hero.shortName}.png`
+                        }}
+                        alt=""
+                        className="h-7 w-12 rounded-sm object-cover ring-1 ring-gold/25"
+                      />
+                    ) : (
+                      <div aria-hidden className="h-7 w-12 rounded-sm bg-secondary ring-1 ring-gold/25" />
+                    )}
                     <span className="font-display text-xs uppercase tracking-[0.12em]">{nameOf(row.heroId)}</span>
                     {picks.best === row.heroId && <Badge>Best</Badge>}
                     {picks.worst === row.heroId && <Badge variant="destructive">Worst</Badge>}
@@ -122,8 +127,8 @@ export default function HeroTable({ rows, heroes }: HeroTableProps) {
                 <td className="px-3 py-2 text-right font-mono text-radiant">{row.wins}</td>
                 <td className={cn("px-3 py-2 text-right font-mono", tier.text)}>{shown}%</td>
                 <td className="px-3 py-2 text-right font-mono text-mana">{row.kda.toFixed(2)}</td>
-                <td className={cn("px-3 py-2 text-right font-mono", row.imp >= 0 ? "text-radiant" : "text-dire")}>
-                  {row.imp > 0 ? `+${row.imp}` : row.imp}
+                <td className={cn("px-3 py-2 text-right font-mono", imp >= 0 ? "text-radiant" : "text-dire")}>
+                  {imp > 0 ? `+${imp}` : imp}
                 </td>
               </tr>
             )
