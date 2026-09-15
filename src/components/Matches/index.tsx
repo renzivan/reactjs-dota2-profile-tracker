@@ -68,16 +68,17 @@ export default function Matches({ playerId }: MatchesProps) {
       }
     }, { threshold: 0.0 })
 
-    if (elementRef.current) {
-      observer.observe(elementRef.current)
+    const sentinel = elementRef.current
+    if (sentinel) {
+      observer.observe(sentinel)
     }
 
     return () => {
-      if (elementRef.current) {
-        observer.unobserve(elementRef.current)
+      if (sentinel) {
+        observer.unobserve(sentinel)
       }
     }
-  }, [elementRef, loadMore, dataMatches?.length, loading])
+  }, [loadMore, dataMatches?.length, loading])
 
   useEffect(() => {
     if (dataAbilities && abilities.length === 0) {

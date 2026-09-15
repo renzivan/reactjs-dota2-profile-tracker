@@ -7,7 +7,7 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "../../components/ui/navigation-menu"
-import { navigationMenuTriggerStyle } from "../../components/ui/navigation-menu"
+import { navigationMenuTriggerStyle } from "../../components/ui/navigation-menu-variants"
 import { Tooltip } from '../../components/ui/tooltip'
 import { getRankName } from '../../lib/utils'
 import Matches from '../../components/Matches'
