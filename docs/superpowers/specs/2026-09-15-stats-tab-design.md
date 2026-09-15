@@ -30,7 +30,7 @@ request: {
   playerList: SINGLE
   lobbyTypeIds: [7]        # RANKED
   startDateTime: $start    # unix seconds
-  endDateTime: $end        # unix seconds, omitted for presets
+  endDateTime: $end        # unix seconds, end of the last day
   take: 100
   skip: $skip
   groupBy: <one of below>
@@ -112,7 +112,8 @@ Parsing rules:
 - `to` is clamped to no later than today.
 - If `from` is after `to` after clamping, they are swapped.
 - Times are local: `start` is the start of the `from` day and `end` is the end of the `to` day, both as unix seconds.
-- Presets send only `startDateTime`, computed as now minus the preset length.
+- Presets snap to day boundaries too: `start` is the start of the day N days ago and `end` is the end of today.
+  Both bounds are therefore stable within a calendar day, so the Apollo cache key does not change between toggles and switching back to a preset is instant.
 
 Changing the window pushes a new history entry so the back button steps through windows.
 
