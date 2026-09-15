@@ -9,12 +9,13 @@ type SummaryStripProps = {
 }
 
 export default function SummaryStrip({ summary, note }: SummaryStripProps) {
-  const tier = tierClasses(winrateTier(summary.winrate))
+  const shown = Math.round(summary.winrate)
+  const tier = tierClasses(winrateTier(shown))
   const cells: { label: string; value: string; className?: string }[] = [
     { label: "Games", value: String(summary.games) },
     { label: "Wins", value: String(summary.wins), className: "text-radiant" },
     { label: "Losses", value: String(summary.losses), className: "text-dire" },
-    { label: "Win %", value: summary.games === 0 ? "—" : `${Math.round(summary.winrate)}%`, className: tier.text },
+    { label: "Win %", value: summary.games === 0 ? "—" : `${shown}%`, className: tier.text },
     { label: "Avg KDA", value: summary.games === 0 ? "—" : summary.avgKDA.toFixed(2), className: "text-mana" },
   ]
 
