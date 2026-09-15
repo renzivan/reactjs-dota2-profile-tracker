@@ -1,11 +1,15 @@
+import { addDays, addWeeks, format, startOfDay, startOfWeek } from 'date-fns'
 import type {
+  DayRow,
   DurationRow,
   FactionRow,
+  HeroRow,
   HourRow,
   LaneRow,
   PartyRow,
   PositionRow,
   StatsPage,
+  StatsWindow,
   WinRow,
 } from './types'
 
@@ -188,4 +192,106 @@ export function hourRows(rows: HourRow[], offsetHours: number): BarRow[] {
     block.wins += r.winCount
   }
   return blocks
+}
+
+export type TimelineBucket = { start: Date; label: string; matches: number; wins: number }
+
+/**
+ * Stratz `dateDay` is UTC midnight of the match's calendar date. Read that
+ * date's year/month/day and build it as a local day so it lands in the same
+ * bucket regardless of the viewer's zone.
+ */
+export function utcDateToLocalDay(unixSeconds: number): Date {
+  const d = new Date(unixSeconds * 1000)
+  return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
+}
+
+export function timelineBuckets(
+  days: DayRow[],
+  w: StatsWindow,
+  granularity: 'day' | 'week',
+): TimelineBucket[] {
+  const windowStart = new Date(w.start * 1000)
+  const windowEnd = new Date(w.end * 1000)
+  const bucketStart = (d: Date) =>
+    granularity === 'day' ? startOfDay(d) : startOfWeek(d, { weekStartsOn: 1 })
+  const next = (d: Date) => (granularity === 'day' ? addDays(d, 1) : addWeeks(d, 1))
+  const labelFor = (d: Date) =>
+    granularity === 'day' ? format(d, 'MMM d') : `Week of ${format(d, 'MMM d')}`
+
+  const buckets: TimelineBucket[] = []
+  const byStart = new Map<number, TimelineBucket>()
+  for (let cursor = bucketStart(windowStart); cursor <= windowEnd; cursor = next(cursor)) {
+    const bucket = { start: cursor, label: labelFor(cursor), matches: 0, wins: 0 }
+    buckets.push(bucket)
+    byStart.set(cursor.getTime(), bucket)
+  }
+
+  for (const row of days) {
+    const day = utcDateToLocalDay(row.dateDay)
+    if (day < startOfDay(windowStart) || day > windowEnd) continue
+    const bucket = byStart.get(bucketStart(day).getTime())
+    if (!bucket) continue
+    bucket.matches += row.matchCount
+    bucket.wins += row.winCount
+  }
+  return buckets
+}
+
+export type HeroStat = {
+  heroId: number
+  matches: number
+  wins: number
+  winrate: number
+  kda: number
+  imp: number
+}
+
+export function heroStats(rows: HeroRow[]): HeroStat[] {
+  return rows.map((r) => ({
+    heroId: r.heroId,
+    matches: r.matchCount,
+    wins: r.winCount,
+    winrate: winrate(r),
+    kda: r.avgKDA,
+    imp: r.avgImp,
+  }))
+}
+
+export type HeroSortKey = 'name' | 'matches' | 'wins' | 'winrate' | 'kda' | 'imp'
+export type SortDir = 'asc' | 'desc'
+
+export function sortHeroes(
+  rows: HeroStat[],
+  key: HeroSortKey,
+  dir: SortDir,
+  nameOf: (heroId: number) => string,
+): HeroStat[] {
+  const sign = dir === 'asc' ? 1 : -1
+  const primary = (a: HeroStat, b: HeroStat) =>
+    key === 'name' ? nameOf(a.heroId).localeCompare(nameOf(b.heroId)) : a[key] - b[key]
+  return [...rows].sort((a, b) => {
+    const p = primary(a, b)
+    if (p !== 0) return p * sign
+    if (b.winrate !== a.winrate) return b.winrate - a.winrate
+    return b.matches - a.matches
+  })
+}
+
+/**
+ * Best is the highest winrate, worst the lowest, both among heroes with at
+ * least MIN_SAMPLE games and ties broken by more games. Nothing is picked
+ * unless two heroes are eligible and they differ.
+ */
+export function pickBestWorst(rows: HeroStat[]): { best?: number; worst?: number } {
+  const eligible = rows.filter((r) => r.matches >= MIN_SAMPLE)
+  if (eligible.length < 2) return {}
+  const higher = (a: HeroStat, b: HeroStat) =>
+    a.winrate !== b.winrate ? a.winrate > b.winrate : a.matches > b.matches
+  const lower = (a: HeroStat, b: HeroStat) =>
+    a.winrate !== b.winrate ? a.winrate < b.winrate : a.matches > b.matches
+  const best = eligible.reduce((acc, r) => (higher(r, acc) ? r : acc))
+  const worst = eligible.reduce((acc, r) => (lower(r, acc) ? r : acc))
+  if (best.heroId === worst.heroId) return {}
+  return { best: best.heroId, worst: worst.heroId }
 }

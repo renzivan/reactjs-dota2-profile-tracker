@@ -1,18 +1,25 @@
+import { startOfDay } from 'date-fns'
 import { describe, expect, it } from 'vitest'
 import type { StatsPage } from './types'
 import {
   MIN_SAMPLE,
   durationRows,
+  heroStats,
   hourRows,
   laneRows,
   mergePages,
   partyRows,
+  pickBestWorst,
   positionRows,
   sideRows,
+  sortHeroes,
   summarize,
+  timelineBuckets,
+  utcDateToLocalDay,
   winrate,
   winrateTier,
 } from './aggregate'
+import { customWindow } from './range'
 
 const emptyPage = (): StatsPage => ({
   faction: [], lane: [], position: [], hero: [], day: [], party: [], duration: [], hour: [],
@@ -174,5 +181,119 @@ describe('bar rows', () => {
 describe('MIN_SAMPLE', () => {
   it('is 5', () => {
     expect(MIN_SAMPLE).toBe(5)
+  })
+})
+
+describe('utcDateToLocalDay', () => {
+  it('reads the UTC calendar date as a local day', () => {
+    // 1789084800 is 2026-09-11T00:00:00Z.
+    expect(utcDateToLocalDay(1789084800)).toEqual(new Date(2026, 8, 11))
+  })
+})
+
+describe('timelineBuckets', () => {
+  const NOW = new Date(2026, 8, 15, 12)
+  // Unix seconds for UTC midnight of a given local calendar date.
+  const utcDay = (y: number, m: number, d: number) => Date.UTC(y, m, d) / 1000
+
+  it('makes one daily bucket per day in the window, including empty ones', () => {
+    const w = customWindow(new Date(2026, 8, 1), new Date(2026, 8, 5), NOW)
+    const buckets = timelineBuckets(
+      [
+        { dateDay: utcDay(2026, 8, 1), matchCount: 3, winCount: 2 },
+        { dateDay: utcDay(2026, 8, 4), matchCount: 1, winCount: 0 },
+      ],
+      w,
+      'day',
+    )
+    expect(buckets.map((b) => [b.label, b.matches, b.wins])).toEqual([
+      ['Sep 1', 3, 2],
+      ['Sep 2', 0, 0],
+      ['Sep 3', 0, 0],
+      ['Sep 4', 1, 0],
+      ['Sep 5', 0, 0],
+    ])
+    expect(buckets[0].start).toEqual(startOfDay(new Date(2026, 8, 1)))
+  })
+
+  it('makes weekly buckets starting Monday', () => {
+    // Sep 1 2026 is a Tuesday, so the first week starts Mon Aug 31.
+    const w = customWindow(new Date(2026, 8, 1), new Date(2026, 8, 20), NOW)
+    const buckets = timelineBuckets(
+      [
+        { dateDay: utcDay(2026, 8, 1), matchCount: 2, winCount: 1 },
+        { dateDay: utcDay(2026, 8, 6), matchCount: 1, winCount: 1 }, // Sunday, same week
+        { dateDay: utcDay(2026, 8, 7), matchCount: 5, winCount: 2 }, // Monday, next week
+      ],
+      w,
+      'week',
+    )
+    expect(buckets.map((b) => [b.label, b.matches, b.wins])).toEqual([
+      ['Week of Aug 31', 3, 2],
+      ['Week of Sep 7', 5, 2],
+      ['Week of Sep 14', 0, 0],
+    ])
+  })
+
+  it('ignores rows outside the window', () => {
+    const w = customWindow(new Date(2026, 8, 1), new Date(2026, 8, 2), NOW)
+    const buckets = timelineBuckets([{ dateDay: utcDay(2026, 7, 1), matchCount: 9, winCount: 9 }], w, 'day')
+    expect(buckets.every((b) => b.matches === 0)).toBe(true)
+  })
+})
+
+describe('heroStats and sortHeroes', () => {
+  const rows = heroStats([
+    { heroId: 1, matchCount: 10, winCount: 6, avgKDA: 3.2, avgImp: 5 },
+    { heroId: 2, matchCount: 4, winCount: 4, avgKDA: 9, avgImp: 30 },
+    { heroId: 3, matchCount: 10, winCount: 2, avgKDA: 1.1, avgImp: -12 },
+  ])
+  const nameOf = (id: number) => ({ 1: 'Axe', 2: 'Zeus', 3: 'Bane' })[id] ?? ''
+
+  it('derives winrate per hero', () => {
+    expect(rows.find((r) => r.heroId === 1)).toEqual({ heroId: 1, matches: 10, wins: 6, winrate: 60, kda: 3.2, imp: 5 })
+  })
+
+  it('sorts by matches desc with winrate desc as tiebreak by default', () => {
+    expect(sortHeroes(rows, 'matches', 'desc', nameOf).map((r) => r.heroId)).toEqual([1, 3, 2])
+  })
+
+  it('sorts by name', () => {
+    expect(sortHeroes(rows, 'name', 'asc', nameOf).map((r) => r.heroId)).toEqual([1, 3, 2])
+    expect(sortHeroes(rows, 'name', 'desc', nameOf).map((r) => r.heroId)).toEqual([2, 3, 1])
+  })
+
+  it('sorts by numeric keys in either direction', () => {
+    expect(sortHeroes(rows, 'kda', 'asc', nameOf).map((r) => r.heroId)).toEqual([3, 1, 2])
+    expect(sortHeroes(rows, 'imp', 'desc', nameOf).map((r) => r.heroId)).toEqual([2, 1, 3])
+  })
+
+  it('does not mutate the input', () => {
+    const before = rows.map((r) => r.heroId)
+    sortHeroes(rows, 'winrate', 'asc', nameOf)
+    expect(rows.map((r) => r.heroId)).toEqual(before)
+  })
+})
+
+describe('pickBestWorst', () => {
+  const stat = (heroId: number, matches: number, wins: number) =>
+    heroStats([{ heroId, matchCount: matches, winCount: wins, avgKDA: 0, avgImp: 0 }])[0]
+
+  it('picks highest and lowest winrate among heroes with enough games', () => {
+    const picks = pickBestWorst([stat(1, 10, 8), stat(2, 10, 3), stat(3, 2, 2)])
+    expect(picks).toEqual({ best: 1, worst: 2 })
+  })
+
+  it('breaks ties by more games', () => {
+    const picks = pickBestWorst([stat(1, 5, 4), stat(2, 10, 8), stat(3, 5, 1), stat(4, 10, 2)])
+    expect(picks).toEqual({ best: 2, worst: 4 })
+  })
+
+  it('returns nothing with fewer than two eligible heroes', () => {
+    expect(pickBestWorst([stat(1, 10, 8), stat(2, 3, 0)])).toEqual({})
+  })
+
+  it('returns nothing when best and worst would be the same hero', () => {
+    expect(pickBestWorst([stat(1, 10, 5), stat(2, 10, 5)])).toEqual({})
   })
 })
