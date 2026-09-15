@@ -1,4 +1,4 @@
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom'
 import RankTier from '../../components/RankTier'
 import Spinner from '../../components/Spinner'
 import { useGetPlayer } from '../../services/player.service'
@@ -10,7 +10,6 @@ import {
 import { navigationMenuTriggerStyle } from "../../components/ui/navigation-menu-variants"
 import { Tooltip } from '../../components/ui/tooltip'
 import { getRankName } from '../../lib/utils'
-import Matches from '../../components/Matches'
 import { useState } from 'react'
 import { Skeleton } from '../../components/ui/skeleton'
 
@@ -20,14 +19,18 @@ export function Profile() {
   const { playerId } = useParams<{ playerId: string }>()
   const { data, loading } = useGetPlayer(Number(playerId) || 0)
 
-  const getLinkClassName = (to: string) => {
-    const isActive = location.pathname === to
-    return `${navigationMenuTriggerStyle()} font-display uppercase tracking-[0.2em] text-xs ${
-      isActive
+  const base = `/profile/${playerId}`
+  const tabs = [
+    { to: base, label: 'Overview', active: location.pathname === base || location.pathname === `${base}/` },
+    { to: `${base}/stats`, label: 'Stats', active: location.pathname.startsWith(`${base}/stats`) },
+  ]
+
+  const tabClassName = (active: boolean) =>
+    `${navigationMenuTriggerStyle()} font-display uppercase tracking-[0.2em] text-xs ${
+      active
         ? '!bg-gold/15 !text-gold border-b-2 border-gold'
         : 'border-b-2 border-transparent hover:!text-gold'
     }`
-  }
 
   if (loading || !data) {
     return (
@@ -55,11 +58,13 @@ export function Profile() {
       <div className="container py-2">
         <NavigationMenu>
           <NavigationMenuList>
-            <NavigationMenuItem>
-              <Link to={`/profile/${playerId}`} className={getLinkClassName(`/profile/${playerId}`)}>
-                Overview
-              </Link>
-            </NavigationMenuItem>
+            {tabs.map((tab) => (
+              <NavigationMenuItem key={tab.to}>
+                <Link to={tab.to} className={tabClassName(tab.active)}>
+                  {tab.label}
+                </Link>
+              </NavigationMenuItem>
+            ))}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
@@ -114,9 +119,7 @@ export function Profile() {
         </div>
       </div>
 
-      <div className="mt-6">
-        <Matches playerId={playerId} />
-      </div>
+      <Outlet />
     </>
   )
 }
