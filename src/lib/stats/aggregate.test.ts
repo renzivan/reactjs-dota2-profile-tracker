@@ -235,6 +235,27 @@ describe('timelineBuckets', () => {
     ])
   })
 
+  it('keeps daily buckets aligned across a midnight DST spring-forward', () => {
+    const previous = process.env.TZ
+    process.env.TZ = 'America/Santiago'
+    try {
+      // Chile springs forward at local 00:00 on the first Sunday of September (6 Sep 2026).
+      const before = new Date(2026, 8, 1).getTimezoneOffset()
+      const after = new Date(2026, 8, 10).getTimezoneOffset()
+      expect(before).not.toBe(after) // the zone actually applied to this process
+      // NOW is 15 Sep, and customWindow clamps `to` to today, so the span ends 14 Sep.
+      const w = customWindow(new Date(2026, 8, 1), new Date(2026, 8, 14), NOW)
+      const rows = Array.from({ length: 14 }, (_, i) => ({ dateDay: utcDay(2026, 8, 1 + i), matchCount: 1, winCount: 1 }))
+      const buckets = timelineBuckets(rows, w, 'day')
+      expect(buckets).toHaveLength(14)
+      expect(buckets.reduce((n, b) => n + b.matches, 0)).toBe(14)
+      expect(buckets.every((b) => b.matches === 1)).toBe(true)
+    } finally {
+      if (previous === undefined) delete process.env.TZ
+      else process.env.TZ = previous
+    }
+  })
+
   it('ignores rows outside the window', () => {
     const w = customWindow(new Date(2026, 8, 1), new Date(2026, 8, 2), NOW)
     const buckets = timelineBuckets([{ dateDay: utcDay(2026, 7, 1), matchCount: 9, winCount: 9 }], w, 'day')

@@ -221,7 +221,7 @@ export function timelineBuckets(
 
   const buckets: TimelineBucket[] = []
   const byStart = new Map<number, TimelineBucket>()
-  for (let cursor = bucketStart(windowStart); cursor <= windowEnd; cursor = next(cursor)) {
+  for (let cursor = bucketStart(windowStart); cursor <= windowEnd; cursor = bucketStart(next(cursor))) {
     const bucket = { start: cursor, label: labelFor(cursor), matches: 0, wins: 0 }
     buckets.push(bucket)
     byStart.set(cursor.getTime(), bucket)
