@@ -28,8 +28,8 @@ export function Profile() {
   const tabClassName = (active: boolean) =>
     `${navigationMenuTriggerStyle()} font-display uppercase tracking-[0.2em] text-xs ${
       active
-        ? '!bg-gold/15 !text-gold border-b-2 border-gold'
-        : 'border-b-2 border-transparent hover:!text-gold'
+        ? 'bg-gold/15 text-gold border-b-2 border-gold'
+        : 'border-b-2 border-transparent text-muted-foreground'
     }`
 
   if (loading || !data) {
