@@ -7,7 +7,7 @@ import {
 } from "../../lib/types"
 import { cn } from "../../lib/utils"
 import { formatClock, formatCompactNumber, formatEnumLabel, formatRoleLabel } from "../../lib/match/format"
-import { abilityBuild, averageSeries, itemTimeline, lastSeries, wardCounts } from "../../lib/match/scoreboard"
+import { abilityBuild, averageSeries, backpack, itemTimeline, lastSeries, wardCounts } from "../../lib/match/scoreboard"
 import AbilityIcon from "../AbilityIcon"
 import ItemIcon from "../ItemIcon"
 
@@ -74,6 +74,7 @@ const DamageBar = ({ label, totals }: { label: string; totals: MatchDamageTotals
  */
 export default function PlayerDetail({ player, hero, abilities, items }: PlayerDetailProps) {
   const build = abilityBuild(player.abilities)
+  const bag = backpack(player)
   const purchases = itemTimeline(player.stats?.itemPurchases)
   const wards = wardCounts(player.stats?.wards)
   const damage = player.stats?.heroDamageReport
@@ -100,6 +101,20 @@ export default function PlayerDetail({ player, hero, abilities, items }: PlayerD
                 />
                 <span className="font-mono text-[9px] leading-none text-muted-foreground">{pick.order}</span>
               </div>
+            ))}
+          </div>
+        </Block>
+      )}
+
+      {bag.length > 0 && (
+        <Block title="Backpack">
+          <div className="flex flex-wrap gap-1.5">
+            {bag.map((itemId, index) => (
+              <ItemIcon
+                key={`${itemId}-${index}`}
+                itemId={itemId}
+                item={items.find((it) => it.id === itemId)}
+              />
             ))}
           </div>
         </Block>

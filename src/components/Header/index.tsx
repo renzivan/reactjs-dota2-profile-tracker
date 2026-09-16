@@ -41,8 +41,11 @@ export default function Header() {
           <form onSubmit={handleSubmitSearch} className="flex gap-3 items-stretch">
             <Input
               className="md:w-[260px] lg:w-[360px]"
+              id="dota-id"
+              name="dotaId"
               type="text"
               placeholder="Dota ID"
+              aria-label="Dota ID"
               onChange={(evt) => handleChangeInput(evt.target.value)}
             />
             <Button disabled={!searchInput} type="submit">
