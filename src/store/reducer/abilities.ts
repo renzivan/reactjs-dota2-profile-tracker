@@ -1,17 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit"
-
-type AbilityType = {
-  id: number,
-  abilityId: number,
-  name: string,
-  isTalent: boolean,
-  language: {
-    displayName: string
-  }
-}
+import { AbilityConstantType } from "../../lib/types"
 
 interface AbilitiesState {
-  value: AbilityType[]
+  value: AbilityConstantType[]
 }
 
 const initialState: AbilitiesState = {

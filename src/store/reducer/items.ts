@@ -1,10 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-
-type ItemType = {
-  id: number,
-  shortName: string,
-  displayName: string
-}
+import { ItemType } from "../../lib/types"
 
 interface ItemsState {
   value: ItemType[]

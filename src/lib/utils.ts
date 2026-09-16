@@ -17,17 +17,6 @@ export function getRole(lane: string, role: string) {
   return role !== 'CORE' ? { displayName: 'Soft Support', shortName: 'soft_support' } : { displayName: 'Off Lane', shortName: 'offlane' }
 }
 
-export function secToMS(seconds: number) {
-  const mins = Math.floor(seconds / 60)
-  const secs = Math.floor(seconds % 60)
-
-  // Pad single digit seconds with a leading zero
-  const formattedMins = String(mins)
-  const formattedSecs = String(secs).padStart(2, '0')
-
-  return `${formattedMins}:${formattedSecs}`
-}
-
 export function formatTimestamp(timestamp: number) {
   const date = new Date(timestamp * 1000)
 

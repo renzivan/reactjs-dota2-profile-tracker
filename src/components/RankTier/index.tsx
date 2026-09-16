@@ -1,13 +1,20 @@
+import { cn } from "../../lib/utils"
+
 type RankTierProps = {
   rank: number
   leaderBoard?: number
-  width?: number
+  /**
+   * Width of the badge. It has to be a literal Tailwind class: a class name
+   * built at runtime is invisible to Tailwind's scanner and would never make it
+   * into the stylesheet.
+   */
+  className?: string
 }
 
 export default function RankTier({
   rank,
   leaderBoard,
-  width = 28
+  className = "w-28"
 }: RankTierProps) {
 
   const getRankImage = () => {
@@ -35,11 +42,11 @@ export default function RankTier({
   return (
     <div className="relative">
       {(rank < 80 && rank % 10 !== 0) &&
-        <div className={`w-${width} absolute`}>
+        <div className={cn("absolute", className)}>
           <img src={getTierImage()} alt="Tier" />
         </div>
       }
-      <div className={`w-${width}`}>
+      <div className={className}>
         <img src={getRankImage()} alt="Rank" className="object-cover" />
       </div>
       {leaderBoard !== undefined &&

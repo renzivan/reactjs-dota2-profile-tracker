@@ -1,17 +1,13 @@
 import { useEffect, useRef } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { Link } from "react-router-dom"
+import { ChevronRight } from "lucide-react"
 import { Button } from "../ui/button"
-import { formatTimestamp, getRankName, secToMS } from "../../lib/utils"
+import { formatTimestamp, getRankName } from "../../lib/utils"
+import { formatClock, formatEnumLabel } from "../../lib/match/format"
 
-import { useGetAbilities } from "../../services/abilities.service"
+import { useAbilitiesCatalog } from "../../services/abilities.service"
 import { useGetMatches } from "../../services/player.service"
-// import { useGetGameModes } from "../../services/gameModes.service"
 import { useHeroesCatalog } from "../../services/heroes.service"
-import { useGetLobbies } from "../../services/lobbies.service"
-
-import { setAbilities } from "../../store/reducer/abilities"
-// import { setGameModes } from "../../store/reducer/gameModes"
-import { setLobbies } from "../../store/reducer/lobbies"
 
 import RankTier from "../RankTier"
 import { Separator } from "../ui/separator"
@@ -22,13 +18,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion"
-import Talent from "../Talent"
 import Spinner from "../Spinner"
 import { Tooltip } from "../ui/tooltip"
-import { RootState } from "../../store"
 import Role from "./components/role.component"
-import MatchHero from "./components/hero.component"
-import Items from "./components/items.component"
+import HeroImage from "../HeroImage"
+import Items from "../Items"
+import AbilityIcon from "../AbilityIcon"
 import { HeroType, MatchType } from "../../lib/types"
 
 interface MatchesProps {
@@ -37,15 +32,8 @@ interface MatchesProps {
 
 export default function Matches({ playerId }: MatchesProps) {
   const elementRef = useRef(null)
-  const abilities = useSelector((state: RootState) => state.abilities.value)
-  // const gameModes = useSelector((state: RootState) => state.gameModes.value)
+  const abilities = useAbilitiesCatalog()
   const heroes = useHeroesCatalog()
-  const lobbies = useSelector((state: RootState) => state.lobbies.value)
-
-  const dispatch = useDispatch()
-  const { data: dataAbilities } = useGetAbilities()
-  const { data: dataLobbies } = useGetLobbies()
-  // const { data: dataGameModes } = useGetGameModes()
 
   const {
     data: dataMatches,
@@ -78,18 +66,6 @@ export default function Matches({ playerId }: MatchesProps) {
     }
   }, [loadMore, dataMatches?.length, loading])
 
-  useEffect(() => {
-    if (dataAbilities && abilities.length === 0) {
-      dispatch(setAbilities(Object.values(dataAbilities)))
-    }
-    // if (dataGameModes && gameModes.length === 0) {
-    //   dispatch(setGameModes(Object.values(dataGameModes)))
-    // }
-    if (dataLobbies && lobbies.length === 0) {
-      dispatch(setLobbies(Object.values(dataLobbies)))
-    }
-  }, [playerId, dispatch, dataLobbies, lobbies, dataAbilities, abilities])
-
   return (
     <div className="flex flex-col items-center">
       <div className="container mb-3 flex items-center gap-3">
@@ -99,7 +75,6 @@ export default function Matches({ playerId }: MatchesProps) {
       <div className="flex flex-col container items-stretch w-full overflow-x-auto mb-5 gap-2">
         {
           dataMatches?.map((match: MatchType) => {
-              const lobby = lobbies?.find((it) => it.id === match.lobbyType)
               const playerStats = match.players[0]
               const hero = heroes.find((it) => it.id === playerStats.heroId) as HeroType
               const side = playerStats.isRadiant ? 'radiant' : 'dire'
@@ -113,10 +88,22 @@ export default function Matches({ playerId }: MatchesProps) {
                   collapsible
                 >
                   <AccordionItem value="item-1" className="border-0">
-                    <AccordionTrigger className="hover:no-underline px-4 py-1 cursor-pointer hover:bg-gold/5 transition-colors">
+                    <AccordionTrigger
+                      className="hover:no-underline px-4 py-1 cursor-pointer hover:bg-gold/5 transition-colors"
+                      action={
+                        <Link
+                          to={`/match/${match.id}?from=${playerId ?? ''}`}
+                          aria-label={`Open the details of match ${match.id}`}
+                          className="group flex shrink-0 items-center gap-1.5 border-l border-gold/25 px-4 font-display text-[10px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:bg-gold/10 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                        >
+                          Details
+                          <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                        </Link>
+                      }
+                    >
                       <div className="flex items-center justify-between w-full py-2">
                         <div className="flex items-center justify-between pr-5 min-w-40">
-                          <MatchHero displayName={hero?.displayName} shortName={hero?.shortName}/>
+                          <HeroImage displayName={hero?.displayName} shortName={hero?.shortName}/>
                           <Role lane={playerStats.lane} role={playerStats.role} />
                         </div>
                         <Separator orientation="vertical" className="h-12 bg-gold/25" />
@@ -140,11 +127,11 @@ export default function Matches({ playerId }: MatchesProps) {
                               <span className="text-muted-foreground"> / </span>
                               <span className="text-mana">{playerStats.assists}</span>
                             </div>
-                            <div className="text-xs uppercase tracking-wider text-muted-foreground font-display">{lobby?.name}</div>
+                            <div className="text-xs uppercase tracking-wider text-muted-foreground font-display">{formatEnumLabel(match.lobbyType)}</div>
                           </div>
                           <div className="flex items-center justify-end gap-3 min-w-52">
                             <Tooltip
-                              trigger={<RankTier rank={match.rank} width={11} />}
+                              trigger={<RankTier rank={match.rank} className="w-11" />}
                               content={<p>{getRankName(match.bracket)}-tier Match</p>}
                             />
                             <Items matchItems={[playerStats.item0Id, playerStats.item1Id, playerStats.item2Id, playerStats.item3Id, playerStats.item4Id, playerStats.item5Id,]} />
@@ -161,7 +148,7 @@ export default function Matches({ playerId }: MatchesProps) {
                             {match.gameMode.toLowerCase().replace(/_/g, " ")}
                           </div>
                           <div className="flex flex-col items-end font-mono">
-                            <div className="text-xs text-gold">{secToMS(match.durationSeconds)}</div>
+                            <div className="text-xs text-gold">{formatClock(match.durationSeconds)}</div>
                             <div className="text-xs text-muted-foreground">{formatTimestamp(match.endDateTime)}</div>
                           </div>
                         </div>
@@ -169,36 +156,13 @@ export default function Matches({ playerId }: MatchesProps) {
                     </AccordionTrigger>
                     <AccordionContent className="px-4 pb-3">
                       <div className="flex gap-2 flex-wrap">
-                        {(hero && abilities) && playerStats?.abilities?.map((ability, index) => {
-                          const abilityFound = abilities?.find((it) => it.id === ability.abilityId )
-
-                          if (!abilityFound) return null
-
-                          return abilityFound.isTalent ?
-                            <Tooltip
-                              key={index}
-                              trigger={<Talent key={index} abilityId={abilityFound.id} heroTalents={hero?.talents} />}
-                              content={<p>{abilityFound.language.displayName}</p>}
-                            />
-                            :
-                            <Tooltip
-                              key={index}
-                              trigger={
-                                <img
-                                  src={`https://cdn.stratz.com/images/dota2/abilities/${abilityFound.name}.png`}
-                                  onError={(e) => {
-                                    const img = e.currentTarget
-                                    if (img.dataset.fallback) return
-                                    img.dataset.fallback = "1"
-                                    img.src = `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/${abilityFound.name}.png`
-                                  }}
-                                  className="w-8 h-8 min-w-8 min-h-8 rounded-sm ring-1 ring-gold/30 hover:ring-gold transition"
-                                  alt=""
-                                />
-                              }
-                              content={<p>{abilityFound.language.displayName}</p>}
-                            />
-                        })}
+                        {(hero && abilities.length > 0) && playerStats?.abilities?.map((ability, index) => (
+                          <AbilityIcon
+                            key={index}
+                            ability={abilities.find((it) => it.id === ability.abilityId)}
+                            heroTalents={hero?.talents}
+                          />
+                        ))}
                       </div>
                     </AccordionContent>
                   </AccordionItem>

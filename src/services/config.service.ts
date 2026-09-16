@@ -24,8 +24,8 @@ export const client = new ApolloClient({
       // instead of replacing lets the stats pages, the profile and the match
       // history coexist under ROOT_QUERY.player without evicting each other.
       PlayerType: { keyFields: false, merge: true },
-      // Same story for the constants root: heroes, items, abilities and lobbies
-      // are separate queries writing different fields under ROOT_QUERY.constants.
+      // Same story for the constants root: heroes, items and abilities are
+      // separate queries writing different fields under ROOT_QUERY.constants.
       ConstantQuery: { keyFields: false, merge: true },
     },
   }),

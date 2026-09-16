@@ -1,18 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit"
 import abilitiesReducer from "./reducer/abilities"
-import gameModesReducer from "./reducer/gameModes"
 import heroesReducer from "./reducer/heroes"
 import itemsReducer from "./reducer/items"
-import lobbiesReducer from "./reducer/lobbies"
 import playerIdReducer from "./reducer/playerId"
 
 const store = configureStore({
   reducer: {
     abilities: abilitiesReducer,
-    gameModes: gameModesReducer,
     heroes: heroesReducer,
     items: itemsReducer,
-    lobbies: lobbiesReducer,
     playerId: playerIdReducer,
   }
 })
