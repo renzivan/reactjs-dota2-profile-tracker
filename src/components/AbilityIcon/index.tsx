@@ -11,8 +11,9 @@ type AbilityIconProps = {
 }
 
 /**
- * One ability from a build. Talents are a position on the hero's tree rather
- * than an icon, so they render as the tree with that branch lit.
+ * One ability from a build, named on hover or on a click that keeps the name
+ * up. Talents are a position on the hero's tree rather than an icon, so they
+ * render as the tree with that branch lit.
  */
 export default function AbilityIcon({ ability, heroTalents, className }: AbilityIconProps) {
   if (!ability) return null
@@ -22,16 +23,12 @@ export default function AbilityIcon({ ability, heroTalents, className }: Ability
 
     return (
       <Tooltip
-        trigger={
-          <span
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-sm bg-gold/5 ring-1 ring-gold/30 transition hover:ring-gold",
-              className,
-            )}
-          >
-            <Talent abilityId={ability.id} heroTalents={heroTalents} />
-          </span>
-        }
+        pinnable
+        triggerClassName={cn(
+          "flex h-8 w-8 items-center justify-center rounded-sm bg-gold/5 ring-1 ring-gold/30 transition hover:ring-gold",
+          className,
+        )}
+        trigger={<Talent abilityId={ability.id} heroTalents={heroTalents} />}
         content={<p>{ability.language.displayName}</p>}
       />
     )
@@ -39,6 +36,8 @@ export default function AbilityIcon({ ability, heroTalents, className }: Ability
 
   return (
     <Tooltip
+      pinnable
+      triggerClassName="flex"
       trigger={
         <img
           src={`https://cdn.stratz.com/images/dota2/abilities/${ability.name}.png`}

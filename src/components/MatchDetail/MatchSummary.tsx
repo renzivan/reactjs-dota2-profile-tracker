@@ -1,4 +1,3 @@
-import { ExternalLink } from "lucide-react"
 import { MatchDetailType } from "../../lib/types"
 import { cn, getRankName } from "../../lib/utils"
 import {
@@ -92,28 +91,8 @@ export default function MatchSummary({ match }: MatchSummaryProps) {
         }`}
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-        <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-          Match · {match.id}
-        </span>
-        <div className="flex items-center gap-3">
-          <a
-            href={`https://stratz.com/matches/${match.id}`}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1 font-display text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-gold"
-          >
-            Stratz <ExternalLink className="h-3 w-3" />
-          </a>
-          <a
-            href={`https://www.dotabuff.com/matches/${match.id}`}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1 font-display text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-gold"
-          >
-            Dotabuff <ExternalLink className="h-3 w-3" />
-          </a>
-        </div>
+      <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+        Match · {match.id}
       </div>
 
       <div className="mt-6 grid items-center gap-6 md:grid-cols-[1fr_auto_1fr]">

@@ -135,8 +135,6 @@ export type MatchDetailPlayerType = {
   steamAccountId: number | null
   steamAccount: {
     name: string | null
-    isAnonymous: boolean | null
-    seasonRank: number | null
   } | null
   isRadiant: boolean
   isVictory: boolean
@@ -160,11 +158,6 @@ export type MatchDetailPlayerType = {
   lane: string
   role: string
   position: string
-  /** Stratz's impact score for the game, relative to the bracket. Can be negative. */
-  imp: number | null
-  award: string
-  isRandom: boolean
-  leaverStatus: string
   item0Id: number | null
   item1Id: number | null
   item2Id: number | null

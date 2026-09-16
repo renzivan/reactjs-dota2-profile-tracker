@@ -18,6 +18,7 @@ export default function Items({ matchItems, className, itemClassName }: ItemsPro
       {matchItems.map((matchItem, index) => (
         <ItemIcon
           key={index}
+          itemId={matchItem}
           item={items.find((it) => it.id === matchItem)}
           className={itemClassName}
         />

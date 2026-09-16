@@ -36,13 +36,6 @@ export function formatCompactNumber(value: number) {
   return `${(value / 1000).toFixed(1)}k`
 }
 
-/** Signed variant, for leads and IMP where the sign is the point. */
-export function formatSigned(value: number) {
-  const prefix = value > 0 ? "+" : ""
-
-  return `${prefix}${value}`
-}
-
 /** "Sep 13, 2026 · 9:38 PM", from a Stratz unix timestamp in seconds. */
 export function formatMatchDate(timestamp: number) {
   const date = new Date(timestamp * 1000)
@@ -66,6 +59,16 @@ export function countStandingBuildings(status: number | null | undefined) {
   }
 
   return bits
+}
+
+/**
+ * A player's role, in the words players use. The API calls the position 4 a
+ * light support, which nobody says out loud.
+ */
+export function formatRoleLabel(role?: string | null) {
+  if (role === "LIGHT_SUPPORT") return "Soft Support"
+
+  return formatEnumLabel(role)
 }
 
 /** (Kills + Assists) / Deaths, with a deathless game reading as the raw total. */

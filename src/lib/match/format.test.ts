@@ -6,7 +6,7 @@ import {
   formatEnumLabel,
   formatMatchDate,
   formatRatio,
-  formatSigned,
+  formatRoleLabel,
   kdaRatio,
 } from './format'
 
@@ -58,11 +58,16 @@ describe('formatCompactNumber', () => {
   })
 })
 
-describe('formatSigned', () => {
-  it('only adds a plus, since a minus is already there', () => {
-    expect(formatSigned(27)).toBe('+27')
-    expect(formatSigned(-8)).toBe('-8')
-    expect(formatSigned(0)).toBe('0')
+describe('formatRoleLabel', () => {
+  it('calls the light support what players call it', () => {
+    expect(formatRoleLabel('LIGHT_SUPPORT')).toBe('Soft Support')
+  })
+
+  it('leaves every other role to the usual formatting', () => {
+    expect(formatRoleLabel('HARD_SUPPORT')).toBe('Hard Support')
+    expect(formatRoleLabel('CORE')).toBe('Core')
+    expect(formatRoleLabel('UNKNOWN')).toBe('Unknown')
+    expect(formatRoleLabel(null)).toBe('')
   })
 })
 

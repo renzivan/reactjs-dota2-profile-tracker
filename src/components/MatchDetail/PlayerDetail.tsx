@@ -6,7 +6,7 @@ import {
   MatchDetailPlayerType,
 } from "../../lib/types"
 import { cn } from "../../lib/utils"
-import { formatClock, formatCompactNumber, formatEnumLabel } from "../../lib/match/format"
+import { formatClock, formatCompactNumber, formatEnumLabel, formatRoleLabel } from "../../lib/match/format"
 import { abilityBuild, averageSeries, itemTimeline, lastSeries, wardCounts } from "../../lib/match/scoreboard"
 import AbilityIcon from "../AbilityIcon"
 import ItemIcon from "../ItemIcon"
@@ -110,7 +110,11 @@ export default function PlayerDetail({ player, hero, abilities, items }: PlayerD
           <div className="flex flex-wrap gap-x-1.5 gap-y-2">
             {purchases.map((purchase, index) => (
               <div key={`${purchase.itemId}-${purchase.time}-${index}`} className="flex flex-col items-center gap-1">
-                <ItemIcon item={items.find((it) => it.id === purchase.itemId)} className="h-6 w-9" />
+                <ItemIcon
+                  itemId={purchase.itemId}
+                  item={items.find((it) => it.id === purchase.itemId)}
+                  className="h-6 w-9"
+                />
                 <span className="font-mono text-[9px] leading-none text-muted-foreground">
                   {formatClock(purchase.time)}
                 </span>
@@ -134,7 +138,7 @@ export default function PlayerDetail({ player, hero, abilities, items }: PlayerD
           <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 lg:grid-cols-4">
             <Fact label="Position">{formatEnumLabel(player.position) || "Unknown"}</Fact>
             <Fact label="Lane">{formatEnumLabel(player.lane) || "Unknown"}</Fact>
-            <Fact label="Role">{formatEnumLabel(player.role) || "Unknown"}</Fact>
+            <Fact label="Role">{formatRoleLabel(player.role) || "Unknown"}</Fact>
             <Fact label="Gold spent">{formatCompactNumber(player.goldSpent)}</Fact>
             <Fact label="Gold left">{formatCompactNumber(player.gold)}</Fact>
             <Fact label="Wards">
@@ -146,19 +150,6 @@ export default function PlayerDetail({ player, hero, abilities, items }: PlayerD
             <Fact label="Camps stacked">{camps}</Fact>
             <Fact label="Actions / min">{apm || "—"}</Fact>
             <Fact label="Party">{player.partyId === null ? "Solo" : `#${player.partyId}`}</Fact>
-            <Fact label="Pick">{player.isRandom ? "Random" : "Picked"}</Fact>
-            <Fact label="Award">
-              {player.award && player.award !== "NONE" ? (
-                <span className="text-gold">{formatEnumLabel(player.award)}</span>
-              ) : (
-                "—"
-              )}
-            </Fact>
-            {player.leaverStatus && player.leaverStatus !== "NONE" && (
-              <Fact label="Leaver">
-                <span className="text-dire">{formatEnumLabel(player.leaverStatus)}</span>
-              </Fact>
-            )}
           </div>
         </Block>
       </div>

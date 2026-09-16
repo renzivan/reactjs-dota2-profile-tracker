@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react"
 import { Link } from "react-router-dom"
 import { AbilityConstantType, HeroType, ItemType, MatchDetailPlayerType } from "../../lib/types"
 import { cn } from "../../lib/utils"
-import { formatCompactNumber, formatRatio, formatSigned, kdaRatio } from "../../lib/match/format"
+import { formatCompactNumber, formatRatio, kdaRatio } from "../../lib/match/format"
 import { backpack, inventory, teamTotals, type TeamSide } from "../../lib/match/scoreboard"
 import HeroImage from "../HeroImage"
 import ItemIcon from "../ItemIcon"
@@ -22,7 +22,7 @@ type ScoreboardProps = {
   highlightSteamId?: number
 }
 
-type Column = { label: string; align: "left" | "right"; hideBelow?: "sm" | "md" | "lg" }
+type Column = { label: string; align: "left" | "right" }
 
 const COLUMNS: Column[] = [
   { label: "Player", align: "left" },
@@ -35,8 +35,9 @@ const COLUMNS: Column[] = [
   { label: "Hero dmg", align: "right" },
   { label: "Twr dmg", align: "right" },
   { label: "Heal", align: "right" },
-  { label: "IMP", align: "right" },
   { label: "Items", align: "right" },
+  // The caret, which needs no heading of its own.
+  { label: "", align: "right" },
 ]
 
 const cellClass = (align: "left" | "right") =>
@@ -46,9 +47,10 @@ const cellClass = (align: "left" | "right") =>
 const playerName = (player: MatchDetailPlayerType) => player.steamAccount?.name || "Anonymous"
 
 /**
- * One team's scoreboard. Each row opens into everything that does not fit a
- * column, and the hero portrait is the handle for it — the player's name stays
- * a link to their own profile.
+ * One team's scoreboard. A row opens into everything that does not fit a
+ * column, the way a match history row does: the whole row is the handle and
+ * the caret on the right says so. Rows stay open until closed again, and the
+ * player's name stays a link to their own profile.
  */
 export default function Scoreboard({
   side,
@@ -59,9 +61,14 @@ export default function Scoreboard({
   items,
   highlightSteamId,
 }: ScoreboardProps) {
-  const [openSlot, setOpenSlot] = useState<number | null>(null)
+  const [openSlots, setOpenSlots] = useState<number[]>([])
   const totals = teamTotals(players)
   const sideText = side === "radiant" ? "radiant-text" : "dire-text"
+
+  const toggle = (playerSlot: number) =>
+    setOpenSlots((open) =>
+      open.includes(playerSlot) ? open.filter((it) => it !== playerSlot) : [...open, playerSlot],
+    )
 
   return (
     <section className={cn("panel overflow-hidden", side === "radiant" ? "stripe-radiant" : "stripe-dire")}>
@@ -97,7 +104,7 @@ export default function Scoreboard({
       </header>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1040px] border-collapse">
+        <table className="w-full min-w-[1000px] border-collapse">
           <thead>
             <tr className="border-b border-gold/15">
               {COLUMNS.map((column) => (
@@ -117,43 +124,33 @@ export default function Scoreboard({
 
           {players.map((player) => {
             const hero = heroes.find((it) => it.id === player.heroId)
-            const open = openSlot === player.playerSlot
+            const open = openSlots.includes(player.playerSlot)
             const highlighted = !!highlightSteamId && player.steamAccountId === highlightSteamId
             const bag = backpack(player)
 
             return (
               <tbody key={player.playerSlot} className="border-b border-gold/10 last:border-b-0">
-                <tr className={cn("transition-colors hover:bg-gold/5", highlighted && "bg-gold/10")}>
+                <tr
+                  onClick={() => toggle(player.playerSlot)}
+                  className={cn(
+                    "cursor-pointer transition-colors hover:bg-gold/5",
+                    highlighted && "bg-gold/10",
+                  )}
+                >
                   <td
-                    className={cn(
-                      "px-2.5 py-2",
-                      highlighted && "shadow-[inset_3px_0_0_hsl(var(--gold))]",
-                    )}
+                    className={cn("px-2.5 py-2", highlighted && "shadow-[inset_3px_0_0_hsl(var(--gold))]")}
                   >
                     <div className="flex items-center gap-2.5">
-                      <button
-                        type="button"
-                        onClick={() => setOpenSlot(open ? null : player.playerSlot)}
-                        aria-expanded={open}
-                        aria-label={`${open ? "Hide" : "Show"} details for ${playerName(player)}`}
-                        className="group flex shrink-0 items-center gap-1.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      >
-                        <ChevronDown
-                          className={cn(
-                            "h-3.5 w-3.5 shrink-0 text-muted-foreground transition-all group-hover:text-gold",
-                            open && "rotate-180 text-gold",
-                          )}
-                        />
-                        <HeroImage
-                          displayName={hero?.displayName}
-                          shortName={hero?.shortName}
-                          className="w-16 ring-1 ring-transparent transition group-hover:ring-gold/60"
-                        />
-                      </button>
+                      <HeroImage
+                        displayName={hero?.displayName}
+                        shortName={hero?.shortName}
+                        className="w-16"
+                      />
                       <div className="flex min-w-0 flex-col">
                         {player.steamAccountId ? (
                           <Link
                             to={`/profile/${player.steamAccountId}`}
+                            onClick={(event) => event.stopPropagation()}
                             className="max-w-[10rem] truncate font-display text-xs text-foreground transition-colors hover:text-gold"
                           >
                             {playerName(player)}
@@ -196,13 +193,6 @@ export default function Scoreboard({
                   <td className={cellClass("right")}>{formatCompactNumber(player.heroDamage)}</td>
                   <td className={cellClass("right")}>{formatCompactNumber(player.towerDamage)}</td>
                   <td className={cellClass("right")}>{formatCompactNumber(player.heroHealing)}</td>
-                  <td className={cellClass("right")}>
-                    {typeof player.imp === "number" ? (
-                      <span className={player.imp >= 0 ? "text-radiant" : "text-dire"}>{formatSigned(player.imp)}</span>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </td>
                   <td className="px-2.5 py-2">
                     <div className="flex items-center justify-end gap-1.5">
                       <Items
@@ -215,6 +205,7 @@ export default function Scoreboard({
                           {bag.map((itemId, index) => (
                             <ItemIcon
                               key={`${itemId}-${index}`}
+                              itemId={itemId}
                               item={items.find((it) => it.id === itemId)}
                               className="h-5 w-7 opacity-70"
                             />
@@ -222,6 +213,19 @@ export default function Scoreboard({
                         </div>
                       )}
                     </div>
+                  </td>
+                  <td className="pl-1 pr-3">
+                    {/* No handler of its own: the click bubbles to the row, which owns the toggle. */}
+                    <button
+                      type="button"
+                      aria-expanded={open}
+                      aria-label={`${open ? "Hide" : "Show"} details for ${playerName(player)}`}
+                      className="flex items-center justify-center rounded-sm p-1 text-muted-foreground transition-colors hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <ChevronDown
+                        className={cn("h-4 w-4 shrink-0 transition-transform duration-200", open && "rotate-45")}
+                      />
+                    </button>
                   </td>
                 </tr>
                 {open && (

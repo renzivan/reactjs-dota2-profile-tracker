@@ -29,8 +29,6 @@ const GET_MATCH = gql`
         steamAccountId
         steamAccount {
           name
-          isAnonymous
-          seasonRank
         }
         isRadiant
         isVictory
@@ -54,10 +52,6 @@ const GET_MATCH = gql`
         lane
         role
         position
-        imp
-        award
-        isRandom
-        leaverStatus
         item0Id
         item1Id
         item2Id
