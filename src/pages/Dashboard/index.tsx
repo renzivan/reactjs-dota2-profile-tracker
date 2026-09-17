@@ -116,7 +116,7 @@ export function Dashboard() {
             <a
               target="_blank"
               rel="noreferrer"
-              href="https://renzivan.github.io"
+              href="https://renzivan.com"
               className="group flex items-center justify-between border border-border hover:border-mana/70 p-3 rounded-sm transition-colors cursor-pointer"
             >
               <span className="text-muted-foreground group-hover:text-mana uppercase tracking-[0.18em] text-xs font-display">Architect</span>
